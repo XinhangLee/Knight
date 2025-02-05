@@ -17,7 +17,7 @@ Knight/
 ├── rsc/
 │
 ├── src/
-│   └── main.c
+│   └── main.cpp
 │
 └── .gitignore
 ```

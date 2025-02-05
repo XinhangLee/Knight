@@ -12,4 +12,19 @@
 
 #include <iostream>
 
+#define LOG(x) SDL_Log(x)
+#define LOG_ERROR(msg) SDL_Log(msg " Failed: %s", SDL_GetError());\
+        exit(EXIT_FAILURE);
+
+
+constexpr int WINDOW_WIDTH = 1000;
+constexpr int WINDOW_HEIGHT = 1000;
+
+typedef struct App {
+    SDL_Window* window;
+    SDL_Renderer* renderer;
+} APP;
+
+extern APP app;
+
 #endif //COMMON_H
