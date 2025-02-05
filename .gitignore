@@ -1,0 +1,50 @@
+# 忽略编译生成的文件
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.exe
+*.out
+*.bin
+
+# 忽略调试文件
+*.pdb
+*.idb
+
+# 忽略构建系统生成的文件
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+
+# 忽略IDE相关的文件
+*.suo
+*.user
+*.userosscache
+*.sln
+*.vs
+.vscode/
+*.code-workspace
+
+# 忽略临时文件和系统文件
+*.tmp
+*.swp
+*.bak
+.DS_Store
+Thumbs.db
+
+# 忽略日志文件
+**/*.log
+
+# 忽略配置文件（根据需要保留或忽略）
+config.json
+config.xml
+config.ini
+
+# 忽略测试生成的文件
+test-results/
+coverage/
