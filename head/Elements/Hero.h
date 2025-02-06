@@ -8,29 +8,34 @@
 #include <common.h>
 #include <Elements/Weapon.h>
 
-
 class Hero {
-    int HP;
-    int shield;
-    int energy;
+    /*  []:
+     *     0 : 总量
+     *     1 : 余量
+     */
+    int HP[2];
+    int shield[2];
+    int energy[2];
     double speed;
-//    Weapon weapon;
+    Weapon weapon;
     Position pos;
-    SDL_Texture* texture;
+    SDL_Texture *texture[5];
 public:
-    Hero(SDL_Renderer *renderer, const std::string &imagePath);
+    Hero(SDL_Renderer *renderer, const std::string &imagePath, const std::string &imagePath_w);
     ~Hero();
-    void render(SDL_Renderer *renderer) const;
+    void render(SDL_Renderer *renderer, Position MousePos);
     void Move(double dx, double dy);
 //    void Attack();
 
-    int getHP() const{return HP;}
-    int getShield() const{return shield;}
-    int getEnergy() const{return energy;}
-    double getX() const{return pos.x;}
-    double getY() const{return pos.y;}
+    [[nodiscard]] int getHP() const{return HP[1];}
+    [[nodiscard]] int getShield() const{return shield[1];}
+    [[nodiscard]] int getEnergy() const{return energy[1];}
+    [[nodiscard]] double getX() const{return pos.x;}
+    [[nodiscard]] double getY() const{return pos.y;}
+    [[nodiscard]] double getSpeed() const{return speed;}
 };
 
+extern Hero *hero;
 
 
 #endif //HERO_H

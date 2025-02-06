@@ -5,7 +5,7 @@
 #ifndef QUIT_H
 #define QUIT_H
 
-#include <common.h>
+#include <Elements/Hero.h>
 
 void quit_app();
 

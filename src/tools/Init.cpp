@@ -15,4 +15,10 @@ void init_app() {
         LOG_ERROR("IMG Init");
     }
     LOG("IMG Init Successfully!");
+
+    // TTF
+    if (TTF_Init() == -1) {
+        LOG_ERROR("TTF Init");
+    }
+    LOG("TTF Init Successfully!");
 }

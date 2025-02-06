@@ -4,6 +4,9 @@
 #include <tools\Quit.h>
 
 void quit_app(){
+    delete hero;
+    SDL_DestroyTexture(background_texture);
+    LOG("Background_Texture Destroyed!");
     SDL_DestroyRenderer(app.renderer);
     LOG("Renderer Destroyed!");
     SDL_DestroyWindow(app.window);
@@ -12,4 +15,6 @@ void quit_app(){
     LOG("SDL Quit Successfully!");
     IMG_Quit();
     LOG("IMG Quit Successfully!");
+    TTF_Quit();
+    LOG("TTF Quit Successfully!");
 }
