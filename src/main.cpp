@@ -1,8 +1,10 @@
 #include <main.h>
+#include <Elements/Hero.h>
 #include <tools/Init.h>
 #include <tools/Quit.h>
 
 APP app;
+Hero *hero = nullptr;
 
 int main(int argc, char* argv[]) {
     init_app();
@@ -12,7 +14,7 @@ int main(int argc, char* argv[]) {
                                     SDL_WINDOWPOS_CENTERED,
                                     WINDOW_WIDTH,
                                     WINDOW_HEIGHT,
-                                    SDL_WINDOW_SHOWN | SDL_WINDOW_ALWAYS_ON_TOP | SDL_WINDOW_BORDERLESS);
+                                    SDL_WINDOW_SHOWN);
     if (app.window == nullptr) {
         LOG_ERROR("Window Create");
     }
@@ -22,17 +24,8 @@ int main(int argc, char* argv[]) {
         LOG_ERROR("Renderer Create");
     }
     LOG("Renderer Created Successfully!");
-    SDL_Surface* background_surface = IMG_Load("../rsc/background.png");
-    if (background_surface == nullptr) {
-        LOG_ERROR("Background Load");
-    }
-    LOG("Background Loaded Successfully!");
-    SDL_Texture* background_texture = SDL_CreateTextureFromSurface(app.renderer, background_surface);
-    if (background_texture == nullptr) {
-        LOG_ERROR("Background Texture Create");
-    }
-    LOG("Background Texture Created Successfully!");
-    SDL_FreeSurface(background_surface);
+    SDL_Texture* background_texture;
+    LoadImage(background_texture, app.renderer, "../rsc/background.png", "Background");
 
 
     bool IsQuit = false;
@@ -44,10 +37,43 @@ int main(int argc, char* argv[]) {
                     IsQuit = true;
                 break;
                 case SDL_KEYDOWN:
-                    if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
-                        IsQuit = true;
-                    break;
-                case SDL_KEYUP:
+                    switch (event.key.keysym.scancode) {
+                        case SDL_SCANCODE_ESCAPE:
+                            LOG("Escape Key Down");
+                            IsQuit = true;
+                        break;
+                        case SDL_SCANCODE_SPACE:
+                            LOG("Space Key Down");
+                            if (!hero)
+                                hero = new Hero(app.renderer, "../rsc/Hero.png");
+                        break;
+                        case SDL_SCANCODE_UP:
+                        case SDL_SCANCODE_W:
+                            LOG("Up Key Down");
+                            if (hero != nullptr)
+                                hero->Move(0.0, -5.0);
+                        break;
+                        case SDL_SCANCODE_DOWN:
+                        case SDL_SCANCODE_S:
+                            LOG("Down Key Down");
+                            if (hero != nullptr)
+                                hero->Move(0.0, 5.0);
+                        break;
+                        case SDL_SCANCODE_LEFT:
+                        case SDL_SCANCODE_A:
+                            LOG("Left Key Down");
+                            if (hero != nullptr)
+                                hero->Move(-5.0, 0.0);
+                        break;
+                        case SDL_SCANCODE_RIGHT:
+                        case SDL_SCANCODE_D:
+                            LOG("Right Key Down");
+                            if (hero != nullptr)
+                                hero->Move(5.0, 0.0);
+                        break;
+                        default:
+                            break;
+                    }
                     break;
                 case SDL_MOUSEBUTTONDOWN:
                     break;
@@ -58,18 +84,43 @@ int main(int argc, char* argv[]) {
                 default:
                     break;
             }
+            const Uint8* keyState = SDL_GetKeyboardState(nullptr);
+
+            if (keyState[SDL_SCANCODE_W] && keyState[SDL_SCANCODE_D]) {
+                LOG("Up and Right Key Down");
+                if (hero != nullptr)
+                    hero->Move(5.0, -5.0);
+            }
+            if (keyState[SDL_SCANCODE_S] && keyState[SDL_SCANCODE_A]) {
+                LOG("Down and Left Key Down");
+                if (hero != nullptr)
+                    hero->Move(-5.0, 5.0);
+            }
+            if (keyState[SDL_SCANCODE_W] && keyState[SDL_SCANCODE_A]) {
+                LOG("Up and Left Key Down");
+                if (hero != nullptr)
+                    hero->Move(-5.0, -5.0);
+            }
+            if (keyState[SDL_SCANCODE_S] && keyState[SDL_SCANCODE_D]) {
+                LOG("Down and Right Key Down");
+                if (hero != nullptr)
+                    hero->Move(5.0, 5.0);
+            }
             SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, 255);
             SDL_RenderClear(app.renderer);
 
-            // 渲染背景
             SDL_RenderCopy(app.renderer, background_texture, nullptr, nullptr);
+            if (hero) {
+                hero->render(app.renderer);
+            }
 
-            // 呈现内容
-            SDL_RenderPresent(app.renderer);
+            Present();
         }
     }
 
+    delete hero;
     SDL_DestroyTexture(background_texture);
+    LOG("Background_Texture Destroyed!");
     atexit(&quit_app);
 
     return 0;

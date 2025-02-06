@@ -3,6 +3,13 @@
 
 ---
 
+## 游戏指南
+
+> ***For  You***:
+> 
+>       诸君，于游戏之境，且行且赏，领略其中雅趣，方不负此番妙境。
+---
+
 ## 项目框架
 
 ```markdown
@@ -11,16 +18,24 @@ Knight/
 ├── README.md
 │
 ├── head/
+│   ├── tools/
+│   │   ├── Init.h
+│   │   └── Quit.h
 │   ├── common.h
 │   └── main.h
 │
 ├── rsc/
+│   └── background.png
 │
 ├── src/
+│   ├── tools/
+│   │   ├── Init.cpp
+│   │   └── Quit.cpp
 │   └── main.cpp
 │
 └── .gitignore
 ```
+
 ---
 
 ## 游戏元素
@@ -28,11 +43,13 @@ Knight/
 ### 人物
 
 ```c++
-class Hero{
+class Hero {
     int HP;
     int Shield;
     int Energy;
+    int Speed;
     Weapon weapon;
+    Postion Hero_pos;
 public:
     Hero();
     ~Hero();
@@ -40,13 +57,20 @@ public:
     void Attack();
 }
 ```
+```c++
+struct Postion {
+    double x;
+    double y;
+}
+```
 
 ### 怪物
 ```c++
-class Monsters{
+class Monster {
     int HP;
-    int Energy;
+    int Speed;
     Weapon weapon;
+    Postion Monster_pos;
 public:
     Monster();
     ~Monster();
@@ -56,21 +80,22 @@ public:
 ```
 ### 武器
 ```c++
-struct Weapon{
+struct Weapon {
     int AttackPower;
     int EnergyConsumed;
-    int speed;
+    int Speed;
+    Direction dir;
+}
+```
+```c++
+struct Direction {
+    int dx;
+    int dy;
 }
 ```
 ### 杂项
+#### 药品
 #### 菜单
 #### 地牢场景
 #### 功能性页面
 
----
-
-## 游戏指南
-
-> ***For You***:
-> 
->   诸君，于游戏之境，且行且赏，领略其中雅趣，方不负此番妙境。

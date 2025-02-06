@@ -5,7 +5,9 @@
 
 void quit_app(){
     SDL_DestroyRenderer(app.renderer);
+    LOG("Renderer Destroyed!");
     SDL_DestroyWindow(app.window);
+    LOG("Window Destroyed!");
     SDL_Quit();
     LOG("SDL Quit Successfully!");
     IMG_Quit();
