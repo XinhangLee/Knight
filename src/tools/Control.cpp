@@ -19,8 +19,13 @@ void control() {
                         case SDL_SCANCODE_SPACE:
                             LOG("Space Key Down");
                             if (!hero)
-                                hero = new Hero(app.renderer, "../rsc/Hero.png", "../rsc/Shotgun.png");
+                                hero = new Hero(app.renderer, "../rsc/Hero.png");
                         break;
+                        case SDL_SCANCODE_RETURN:
+                            LOG("Return Key Down");
+                            if (hero && !hero->getWeapon()) {
+                                hero->setWeapon(new Weapon(app.renderer, "../rsc/Shotgun.png"));
+                            }
                         case SDL_SCANCODE_UP:
                         case SDL_SCANCODE_W:
                             LOG("Up Key Down");
@@ -66,25 +71,25 @@ void control() {
                 || (keyState[SDL_SCANCODE_UP] && keyState[SDL_SCANCODE_RIGHT])) {
                 LOG("Up and Right Key Down");
                 if (hero != nullptr)
-                    hero->Move(hero->getSpeed(), -hero->getSpeed());
+                    hero->Move(hero->getSpeed() / Root_2, -hero->getSpeed() / Root_2);
             }
             if ((keyState[SDL_SCANCODE_S] && keyState[SDL_SCANCODE_A])
                 || (keyState[SDL_SCANCODE_DOWN] && keyState[SDL_SCANCODE_LEFT])){
                 LOG("Down and Left Key Down");
                 if (hero != nullptr)
-                    hero->Move(-hero->getSpeed(), hero->getSpeed());
+                    hero->Move(-hero->getSpeed() / Root_2, hero->getSpeed() / Root_2);
             }
             if ((keyState[SDL_SCANCODE_W] && keyState[SDL_SCANCODE_A])
                 || (keyState[SDL_SCANCODE_UP] && keyState[SDL_SCANCODE_LEFT])){
                 LOG("Up and Left Key Down");
                 if (hero != nullptr)
-                    hero->Move(-hero->getSpeed(), -hero->getSpeed());
+                    hero->Move(-hero->getSpeed() / Root_2, -hero->getSpeed() / Root_2);
             }
             if ((keyState[SDL_SCANCODE_S] && keyState[SDL_SCANCODE_D])
                 || (keyState[SDL_SCANCODE_DOWN] && keyState[SDL_SCANCODE_RIGHT])){
                 LOG("Down and Right Key Down");
                 if (hero != nullptr)
-                    hero->Move(hero->getSpeed(), hero->getSpeed());
+                    hero->Move(hero->getSpeed() / Root_2, hero->getSpeed() / Root_2);
             }
             SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, 255);
             SDL_RenderClear(app.renderer);
@@ -92,7 +97,11 @@ void control() {
             Render_background();
 
             if (hero) {
-                hero->render(app.renderer, MousePos);
+                hero->render(app.renderer);
+                if (hero->getWeapon()) {
+                    hero->getWeapon()->UpdatePos(hero->getX(), hero->getY());
+                    hero->getWeapon()->render(app.renderer, MousePos);
+                }
             }
 
             Present();
@@ -102,6 +111,6 @@ void control() {
 
 void Render_background() {
     LoadImage(background_texture, app.renderer, "../rsc/background.png", "Background");
-    SDL_Rect backgroundRect = {250, 0, 1007, 1000};
+    constexpr SDL_Rect backgroundRect = {250, 0, 1007, 1000};
     SDL_RenderCopy(app.renderer, background_texture, nullptr, &backgroundRect);
 }

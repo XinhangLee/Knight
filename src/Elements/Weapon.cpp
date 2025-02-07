@@ -23,10 +23,6 @@ double Weapon::UpdateDir(const double x, const double y) const {
     return degree;
 }
 
-void Weapon::UpdatePos(const double x, const double y) {
-    Pos.x = x;
-    Pos.y = y;
-}
 
 void Weapon::render(SDL_Renderer *renderer, const Position MousePos) const {
     const SDL_Rect rect = {static_cast<int>(Pos.x) + 7, static_cast<int>(Pos.y) + 37, 48, 12 };

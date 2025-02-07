@@ -5,14 +5,13 @@
 #include <Elements/Hero.h>
 
 Hero::Hero(SDL_Renderer *renderer,
-    const std::string &imagePath,
-    const std::string &imagePath_w): HP{5,5},
+    const std::string &imagePath): HP{5,5},
                                    shield{5,5},
                                    energy{200,200},
                                    speed(5.0),
+                                   weapon(nullptr),
                                    pos{WINDOW_WIDTH / 2.0 - 28, WINDOW_HEIGHT / 2.0},
-                                   texture{nullptr},
-                                   weapon(renderer, imagePath_w){
+                                   texture{nullptr}{
     //加载图像
     //人物
     LoadImage(this->texture[0], renderer, imagePath, "Hero");
@@ -21,6 +20,7 @@ Hero::Hero(SDL_Renderer *renderer,
 }
 
 Hero::~Hero() {
+    delete weapon;
     SDL_DestroyTexture(texture[0]);
     SDL_DestroyTexture(texture[1]);
     SDL_DestroyTexture(texture[2]);
@@ -28,7 +28,7 @@ Hero::~Hero() {
     SDL_DestroyTexture(texture[4]);
     LOG("Hero Destroyed Successfully!");
 }
-void Hero::render(SDL_Renderer* renderer, Position MousePos) {
+void Hero::render(SDL_Renderer* renderer) {
     if (texture[0]) {
         const SDL_Rect rect = { static_cast<int>(pos.x), static_cast<int>(pos.y), 64, 64 };
         SDL_RenderCopy(renderer, texture[0], nullptr, &rect);
@@ -52,7 +52,7 @@ void Hero::render(SDL_Renderer* renderer, Position MousePos) {
 
     const std::string HP_Text = std::to_string(HP[1]) + " / " + std::to_string(HP[0]);
     const std::string energy_Text = std::to_string(energy[1]) + " / " + std::to_string(energy[0]);
-    std::string shield_Text = std::to_string(shield[1]) + " / " + std::to_string(shield[0]);
+    const std::string shield_Text = std::to_string(shield[1]) + " / " + std::to_string(shield[0]);
 
     TTF_Font *font = TTF_OpenFont("../rsc/svgafix.fon", 0);
     if (font == nullptr) {
@@ -72,9 +72,6 @@ void Hero::render(SDL_Renderer* renderer, Position MousePos) {
     TTF_CloseFont(font);
     LOG("Font Close Successfully!");
 
-    // 渲染武器
-    weapon.UpdatePos(pos.x, pos.y);
-    weapon.render(renderer, MousePos);
 }
 void Hero::Move(const double dx, const double dy) {
     pos.x += dx;

@@ -21,6 +21,7 @@
 
 constexpr int WINDOW_WIDTH = 1500;
 constexpr int WINDOW_HEIGHT = 1000;
+constexpr double Root_2 = sqrt(2);
 
 constexpr SDL_Color WHITE = {255,255,255,255};
 constexpr SDL_Color BLACK = {0,0,0,0};

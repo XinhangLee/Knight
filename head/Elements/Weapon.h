@@ -17,8 +17,8 @@ class Weapon{
 public:
     Weapon(SDL_Renderer *renderer, const std::string &imagePath);
     ~Weapon();
-    double UpdateDir(double, double) const;
-    void UpdatePos(double, double);
+    [[nodiscard]] double UpdateDir(double, double) const;
+    void UpdatePos(const double x, const double y) {Pos.x = x;Pos.y = y;}
     void render(SDL_Renderer *renderer, Position MousePos) const;
     [[nodiscard]] double get_dx() const{return Dir.dx;}
     [[nodiscard]] double get_dy() const{return Dir.dy;}

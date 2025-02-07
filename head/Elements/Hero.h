@@ -17,13 +17,13 @@ class Hero {
     int shield[2];
     int energy[2];
     double speed;
-    Weapon weapon;
+    Weapon *weapon;
     Position pos;
     SDL_Texture *texture[5];
 public:
-    Hero(SDL_Renderer *renderer, const std::string &imagePath, const std::string &imagePath_w);
+    Hero(SDL_Renderer *renderer, const std::string &imagePath);
     ~Hero();
-    void render(SDL_Renderer *renderer, Position MousePos);
+    void render(SDL_Renderer *renderer);
     void Move(double dx, double dy);
 //    void Attack();
 
@@ -33,6 +33,8 @@ public:
     [[nodiscard]] double getX() const{return pos.x;}
     [[nodiscard]] double getY() const{return pos.y;}
     [[nodiscard]] double getSpeed() const{return speed;}
+    [[nodiscard]] Weapon *getWeapon() const{return weapon;}
+    void setWeapon(Weapon *w){weapon = w;}
 };
 
 extern Hero *hero;
