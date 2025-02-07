@@ -13,6 +13,8 @@
 #include <iostream>
 #include <cstring>
 #include <cmath>
+#include <vector>
+#include <algorithm>
 
 #define LOG(x) SDL_Log(x)
 #define LOG_ERROR(msg) SDL_Log(msg " Failed: %s", SDL_GetError());\
@@ -22,6 +24,8 @@
 constexpr int WINDOW_WIDTH = 1500;
 constexpr int WINDOW_HEIGHT = 1000;
 constexpr double Root_2 = sqrt(2);
+constexpr int FPS = 40;                      // 目标帧率
+constexpr double frameTime = 1.0 / FPS;      // 每帧所需时间（秒）
 
 constexpr SDL_Color WHITE = {255,255,255,255};
 constexpr SDL_Color BLACK = {0,0,0,0};
@@ -48,6 +52,11 @@ inline SDL_Texture* background_texture = nullptr;
 
 inline void Present(){
     SDL_RenderPresent(app.renderer);
+}
+inline double getDegree(const Direction dir) {
+    const double radians = atan(dir.dy / dir.dx);
+    const double degree = radians * (180.0f / M_PI);
+    return degree;
 }
 inline void LoadImage(SDL_Texture *&texture, SDL_Renderer *renderer,
             const std::string &imagePath, const std::string &imageName) {

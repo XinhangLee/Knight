@@ -1,9 +1,13 @@
 #include <tools/Control.h>
 
 void control() {
+    Uint64 lastCounter = SDL_GetPerformanceCounter();
+    const Uint64 counterFreq = SDL_GetPerformanceFrequency();
     bool IsQuit = false;
     Position MousePos = { 0.0, 0.0 };
     while (!IsQuit) {
+        const Uint64 currentCounter = SDL_GetPerformanceCounter();
+        const double deltaTime = static_cast<double>(currentCounter - lastCounter) / static_cast<double>(counterFreq);
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
@@ -55,6 +59,18 @@ void control() {
                     }
                     break;
                 case SDL_MOUSEBUTTONDOWN:
+                    if (event.button.button == SDL_BUTTON_LEFT) {
+                        MousePos.x = event.button.x;
+                        MousePos.y = event.button.y;
+                        if (hero != nullptr){
+                            Weapon *w = hero->getWeapon();
+                            if (w != nullptr){
+                                w->UpdatePos(hero->getX(), hero->getY());
+                                w->UpdateDir(MousePos.x, MousePos.y);
+                                w->Attack(app.renderer);
+                            }
+                        }
+                    }
                     break;
                 case SDL_MOUSEBUTTONUP:
                     break;
@@ -62,7 +78,7 @@ void control() {
                     MousePos.x = event.motion.x;
                     MousePos.y = event.motion.y;
                     break;
-                default:
+                default:;
                     break;
             }
             const Uint8* keyState = SDL_GetKeyboardState(nullptr);
@@ -100,11 +116,16 @@ void control() {
                 hero->render(app.renderer);
                 if (hero->getWeapon()) {
                     hero->getWeapon()->UpdatePos(hero->getX(), hero->getY());
+                    hero->getWeapon()->UpdateDir(MousePos.x, MousePos.y);
                     hero->getWeapon()->render(app.renderer, MousePos);
                 }
             }
 
             Present();
+            if (const double delayTime = frameTime - deltaTime; delayTime > 0) {
+                SDL_Delay(static_cast<Uint32>(delayTime * 1000));
+            }
+            lastCounter = currentCounter;
         }
     }
 }

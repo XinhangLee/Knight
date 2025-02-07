@@ -21,11 +21,21 @@ Hero::Hero(SDL_Renderer *renderer,
 
 Hero::~Hero() {
     delete weapon;
-    SDL_DestroyTexture(texture[0]);
+    if (texture[0]) {
+        SDL_DestroyTexture(texture[0]);
+    }
+    if (texture[1]) {
     SDL_DestroyTexture(texture[1]);
+    }
+    if (texture[2]) {
     SDL_DestroyTexture(texture[2]);
+    }
+    if (texture[3]) {
     SDL_DestroyTexture(texture[3]);
+    }
+    if (texture[4]) {
     SDL_DestroyTexture(texture[4]);
+    }
     LOG("Hero Destroyed Successfully!");
 }
 void Hero::render(SDL_Renderer* renderer) {
