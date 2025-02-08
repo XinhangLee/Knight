@@ -1,5 +1,5 @@
 # Knight
-> This is a project based on the game ***Soul Knight***, and is configured via **SDL**.
+- This is a project based on the game ***Soul Knight***, and is configured via **SDL**.
 
 ---
 
@@ -22,17 +22,14 @@ Knight/
 │   │   ├── Hero.h
 │   │   ├── Monster.h
 │   │   └── Weapon.h
-│   │
-│   ├── tools/
-│   │   ├── Control.h
-│   │   ├── Init.h
-│   │   └── Quit.h
-│   │
+│   ├── menu.h
+│   ├── game.h
 │   ├── common.h
 │   └── main.h
 │
 ├── rsc/
 │   ├── background.png
+│   ├── Fireball.png
 │   ├── Func.png
 │   ├── Hero.png
 │   ├── Shotgun.png
@@ -43,12 +40,8 @@ Knight/
 │   │   ├── Hero.h
 │   │   ├── Monster.h
 │   │   └── Weapon.h
-│   │
-│   ├── tools/
-│   │   ├── Control.cpp
-│   │   ├── Init.cpp
-│   │   └── Quit.cpp
-│   │
+│   ├── menu.h
+│   ├── game.h
 │   └── main.cpp
 │
 └── .gitignore
@@ -59,6 +52,8 @@ Knight/
 ## 游戏元素
 
 ### 人物
+
+> <img src="./rsc/Hero.png" width="64" height="64" alt="Hero" title="Hero">
 
 ```c++
 class Hero {
@@ -97,6 +92,9 @@ public:
 }
 ```
 ### 武器
+
+> <img src="./rsc/Shotgun.png" width="64" height="16" alt="Shotgun" title="Shotgun">
+
 ```c++
 struct Weapon {
     int AttackPower;
@@ -115,5 +113,10 @@ struct Direction {
 #### 药品
 #### 菜单
 #### 地牢场景
+
+> <img src="./rsc/background.png" width="128" height="128" alt="Shotgun" title="Shotgun">
+
 #### 功能性页面
+
+> ![功能性界面](./rsc/Func.png "功能性界面" )
 

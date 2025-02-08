@@ -18,10 +18,11 @@ class Bullet {
     mutable SDL_Rect rect;
     mutable bool is_first;
 public:
-    Bullet(SDL_Renderer *renderer, const std::string &imagePath, double speed, Direction Dir, Position Pos,
+    Bullet(const std::string &imagePath, double speed, Direction Dir, Position Pos,
             int FrameCount, double degree);
+    ~Bullet();
     void Update();
-    void render(SDL_Renderer *renderer) const;
+    void render() const;
     SDL_Rect &GetRect() const{return rect;}
     bool isFirst() const{return is_first;}
 };
@@ -36,15 +37,16 @@ class Weapon{
     SDL_Texture *texture;
     std::vector<Bullet *> &bullets;
 public:
-    Weapon(SDL_Renderer *renderer, const std::string &imagePath);
+    explicit Weapon(const std::string &imagePath);
     ~Weapon();
     void UpdateDir(const double x, const double y){Dir = {x - Pos.x, y - Pos.y};}
     void UpdatePos(const double x, const double y) {Pos.x = x;Pos.y = y;}
-    void render(SDL_Renderer *renderer, Position MousePos) const;
+    void render(Position MousePos) const;
     [[nodiscard]] double get_dx() const{return Dir.dx;}
     [[nodiscard]] double get_dy() const{return Dir.dy;}
-    void Attack(SDL_Renderer *renderer) const;
-    // static void removeBullet(std::vector<Bullet*>& bullets, Bullet* bullet);
+    void Attack() const {
+        bullets.push_back(new Bullet("../rsc/Fireball.png", 8.0, Dir, {Pos.x + 25, Pos.y + 40}, 6, getDegree(Dir)));}
+    [[nodiscard]] int get_EnergyConsumed() const{return EnergyConsumed;}
 };
 
 
