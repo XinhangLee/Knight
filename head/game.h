@@ -9,6 +9,7 @@
 
 void game();
 
+void Render_ground_game();
 void Render_background();
 void Render_fps(int);
 void display();

@@ -34,6 +34,9 @@ constexpr SDL_Color RED = {255,0,0,0};
 constexpr SDL_Color GREEN = {0,255,0,0};
 constexpr SDL_Color BLUE = {0,0,255,0};
 constexpr SDL_Color YELLOW = {255,255,0,0};
+constexpr SDL_Color MAGENTA = {255,0,255,0};
+constexpr SDL_Color CYAN = {0,255,0,255};
+constexpr SDL_Color GRAY = {200,200,200,255};
 
 
 typedef struct App {

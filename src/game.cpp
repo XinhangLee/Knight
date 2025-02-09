@@ -39,6 +39,7 @@ void game() {
 
         SDL_Delay(1000 / FPS);
     }
+    IsQuit = false;
 }
 
 
@@ -49,6 +50,7 @@ void display() {
     SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, 255);
     SDL_RenderClear(app.renderer);
     // 加载背景、帧率
+    Render_ground_game();
     Render_background();
     SDL_DestroyTexture(background_texture);
     const Uint32 duration = SDL_GetTicks() - tick;
@@ -67,6 +69,15 @@ void display() {
     }
 
     Present();
+}
+void Render_ground_game() {
+    SDL_Texture *texture = nullptr;
+    LoadImage(texture, "../rsc/mystery-forest.png");
+    constexpr SDL_Rect groundRect = {-180, 0, 1500, 1000};
+    constexpr SDL_Rect groundRect2 = {200, 0, 1500, 1000};
+    SDL_RenderCopy(app.renderer, texture, nullptr, &groundRect);
+    SDL_RenderCopy(app.renderer, texture, nullptr, &groundRect2);
+    SDL_DestroyTexture(texture);
 }
 void Render_background() {
     LoadImage(background_texture, "../rsc/background.png");

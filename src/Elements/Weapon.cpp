@@ -6,7 +6,7 @@
 std::vector<Bullet*> initial_bullets;
 
 Weapon::Weapon(const std::string &imagePath): AttackPower(3),
-                                              EnergyConsumed(20.0),
+                                              EnergyConsumed(2.0),
                                               Dir{1.0, 0.0},
                                               Pos{0.0, 0.0},
                                               texture(nullptr),
