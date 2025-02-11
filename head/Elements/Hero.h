@@ -7,8 +7,9 @@
 
 #include <common.h>
 #include <Elements/Weapon.h>
+#include <Stash.h>
 
-class Hero {
+class Hero : public Collider{
     /*  []:
      *     0 : 总量
      *     1 : 余量
@@ -17,25 +18,31 @@ class Hero {
     int shield[2];
     int energy[2];
     double speed;
+    Position pos_hero;
+    SDL_Point center_hero;
+    mutable Direction dir_hero;
+    int frame_num;
+    int currentframe;
     Weapon *weapon;
-    Position pos;
-    SDL_Texture *texture[5];
+    const s_weapons *weapon_type;
+    SDL_Texture *texture[4];
 public:
-    explicit Hero(const std::string &imagePath);
+    explicit Hero(const s_heroes &);
     ~Hero();
-    void render();
-    void Move(double dx, double dy);
-//    void Attack();
-
+    void render(Position);
+    void Move(double, double);
+    void Move(Position);
     [[nodiscard]] int getHP() const{return HP[1];}
     [[nodiscard]] int getShield() const{return shield[1];}
     [[nodiscard]] int getEnergy() const{return energy[1];}
-    [[nodiscard]] double getX() const{return pos.x;}
-    [[nodiscard]] double getY() const{return pos.y;}
+    [[nodiscard]] double getX() const{return pos_hero.x;}
+    [[nodiscard]] double getY() const{return pos_hero.y;}
     [[nodiscard]] double getSpeed() const{return speed;}
     [[nodiscard]] Weapon *getWeapon() const{return weapon;}
     void setWeapon(Weapon *w){weapon = w;}
     void Sub_energy(const int dx){energy[1] -= dx;}
+    void UpdateDir(const Position p) const {dir_hero = {p.x - pos_hero.x,p.y - pos_hero.y };}
+    const s_weapons *getWeaponType() const {return weapon_type;}
 };
 
 extern Hero *hero;

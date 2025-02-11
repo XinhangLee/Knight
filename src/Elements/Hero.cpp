@@ -3,19 +3,19 @@
 //
 
 #include <Elements/Hero.h>
+#include <Elements/Wall.h>
 
-Hero::Hero(const std::string &imagePath): HP{5,5},
-                                   shield{5,5},
-                                   energy{200,200},
-                                   speed(5.0),
-                                   weapon(nullptr),
-                                   pos{WINDOW_WIDTH / 2.0 - 28, WINDOW_HEIGHT / 2.0},
-                                   texture{nullptr}{
+Hero::Hero(const s_heroes &hero):Collider(hero.pos_hero.x, hero.pos_hero.y,128,128), HP{hero.HP[0],hero.HP[1]}, shield{hero.shield[0], hero.shield[1]},
+                                 energy{hero.energy[0], hero.energy[1]}, speed(hero.speed), pos_hero(hero.pos_hero), center_hero(hero.center_hero),
+                                 dir_hero(0.0,0.0), frame_num(hero.frame_num), currentframe(0), weapon(nullptr),weapon_type(hero.weapon_type),
+                                 texture{nullptr, nullptr, nullptr, nullptr}{
     //加载图像
-    //人物
-    LoadImage(this->texture[0], imagePath);
+    //人物静止
+    LoadImage(this->texture[0], hero.StablePath);
+    //人物运动
+    LoadImage(this->texture[1], hero.WalkPath);
     //功能性界面
-    LoadImage(this->texture[1], "../rsc/Func.png");
+    LoadImage(this->texture[2], "../rsc/Func.png");
 }
 
 Hero::~Hero() {
@@ -27,14 +27,61 @@ Hero::~Hero() {
     }
     LOG("Hero Destroyed Successfully!");
 }
-void Hero::render() {
-    if (texture[0]) {
-        const SDL_Rect rect = { static_cast<int>(pos.x), static_cast<int>(pos.y), 64, 64 };
-        SDL_RenderCopy(app.renderer, texture[0], nullptr, &rect);
+void Hero::Move(const double dx, const double dy) {
+    pos_hero.x += dx;
+    pos_hero.y += dy;
+    currentframe = (currentframe + 1) % frame_num;
+    setColliderPosition(static_cast<int>(pos_hero.x) - center_hero.x, static_cast<int>(pos_hero.y) - center_hero.y);
+}
+void Hero::Move(const Position MousePos) {
+    UpdateDir(MousePos);
+    int pos[4] = {};
+    const int code = isColliding(*this);
+    for (int i = 0; i < 4; i++) {
+        pos[i] = code & static_cast<int>(pow(2, i)) ? 1 : 0;
     }
-    if (texture[1]) {
-        constexpr SDL_Rect rect1 = { 25, 20, 269, 134 };
-        SDL_RenderCopy(app.renderer, texture[1], nullptr, &rect1);
+    if (pos[0] && dir_hero.dx < 0) {
+        dir_hero.dx = 0.0;
+    }
+    if (pos[1] && dir_hero.dy < 0) {
+        dir_hero.dy = 0.0;
+    }
+    if (pos[2] && dir_hero.dx > 0) {
+        dir_hero.dx = 0.0;
+    }
+    if (pos[3] && dir_hero.dy > 0) {
+        dir_hero.dy = 0.0;
+    }
+    if (pos_hero.x > MousePos.x + 2.0 || pos_hero.x < MousePos.x - 2.0
+        || pos_hero.y > MousePos.y + 2.0 || pos_hero.y < MousePos.y - 2.0) {
+        const double len = sqrt(pow(dir_hero.dx, 2) + pow(dir_hero.dy, 2));
+        pos_hero.x += dir_hero.dx / len * speed;
+        pos_hero.y += dir_hero.dy / len * speed;
+        currentframe = (currentframe + 1) % frame_num;
+        }
+    setColliderPosition(static_cast<int>(pos_hero.x) - center_hero.x, static_cast<int>(pos_hero.y) - center_hero.y);
+
+}
+void Hero::render(const Position MousePos) {
+    if (pos_hero.x <= MousePos.x + 2.0 && pos_hero.x >= MousePos.x - 2.0
+        && pos_hero.y <= MousePos.y + 2.0 && pos_hero.y >= MousePos.y - 2.0) {
+        if (texture[0]) {
+            constexpr SDL_Rect srcrect = {0, 0, 128, 128};
+            SDL_RenderCopy(app.renderer, texture[0], &srcrect, getCollider());
+        }
+    }
+    else {
+        if (texture[1]) {
+            const SDL_Rect srcrect = {128 * currentframe, 0, 128, 128};
+            SDL_RendererFlip flip = SDL_FLIP_NONE;
+            if (MousePos.x - pos_hero.x < 0)
+                flip = SDL_FLIP_HORIZONTAL;
+            SDL_RenderCopyEx(app.renderer, texture[1], &srcrect, getCollider(), 0.0f, nullptr, flip);
+        }
+    }
+    if (texture[2]) {
+        constexpr SDL_Rect rect1 = { 25, 20, FUNCTION_WIDTH, FUNCTION_HEIGHT};
+        SDL_RenderCopy(app.renderer, texture[2], nullptr, &rect1);
     }
     const int HP_Length = HP[1] * 180 / HP[0]; // 条的总长度为180像素
     const int energy_Length = energy[1] * 180 / energy[0];
@@ -57,30 +104,19 @@ void Hero::render() {
     if (font == nullptr) {
         LOG_ERROR("Font Open");
     }
-    LoadText(this->texture[2], font, HP_Text, WHITE);
+    LoadText(this->texture[3], font, HP_Text, WHITE);
     constexpr SDL_Rect HP_Text_Rect = { 87 + 65, 36, 40, 17 };
-    SDL_RenderCopy(app.renderer, texture[2], nullptr, &HP_Text_Rect);
-    SDL_DestroyTexture(texture[2]);
+    SDL_RenderCopy(app.renderer, texture[3], nullptr, &HP_Text_Rect);
+    SDL_DestroyTexture(texture[3]);
     LoadText(this->texture[3], font, energy_Text, WHITE);
     constexpr SDL_Rect energy_Text_Rect = { 87 + 50, 76, 80, 17 };
     SDL_RenderCopy(app.renderer, texture[3], nullptr, &energy_Text_Rect);
     SDL_DestroyTexture(texture[3]);
-    LoadText(this->texture[4], font, shield_Text, WHITE);
+    LoadText(this->texture[3], font, shield_Text, WHITE);
     constexpr SDL_Rect shield_Text_Rect = { 87 + 65, 118, 40, 17 };
-    SDL_RenderCopy(app.renderer, texture[4], nullptr, &shield_Text_Rect);
-    SDL_DestroyTexture(texture[4]);
+    SDL_RenderCopy(app.renderer, texture[3], nullptr, &shield_Text_Rect);
+    SDL_DestroyTexture(texture[3]);
 
     TTF_CloseFont(font);
-
 }
-void Hero::Move(const double dx, const double dy) {
-    pos.x += dx;
-    pos.y += dy;
-}
-// void Hero::Attack() {
-//
-// }
-
-
-
 

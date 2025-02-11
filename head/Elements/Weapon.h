@@ -6,47 +6,31 @@
 #define WEAPON_H
 
 #include <common.h>
+#include <Elements/Bullet.h>
 
-class Bullet {
-    Position Pos;
-    Direction Dir;
-    double speed;
-    SDL_Texture *texture;
-    int currentFrame;
-    int FrameCount;
-    double degree;
-    mutable SDL_Rect rect;
-    mutable bool is_first;
-public:
-    Bullet(const std::string &imagePath, double speed, Direction Dir, Position Pos,
-            int FrameCount, double degree);
-    ~Bullet();
-    void Update();
-    void render() const;
-    SDL_Rect &GetRect() const{return rect;}
-    bool isFirst() const{return is_first;}
-};
-
-extern std::vector<Bullet*> initial_bullets;
 
 class Weapon{
-    int AttackPower;
-    int EnergyConsumed;
-    Direction Dir;
-    Position Pos;
+    int attack_power;
+    int energy_consumed;
+    mutable Direction dir_weapon;
+    Position pos_weapon;
+    SDL_Point center_weapon;
+    SDL_Point launch_point;
     SDL_Texture *texture;
+    const s_bullets *bullet_type;
     std::vector<Bullet *> &bullets;
 public:
-    explicit Weapon(const std::string &imagePath);
+    explicit Weapon(const s_weapons &);
     ~Weapon();
-    void UpdateDir(const double x, const double y){Dir = {x - Pos.x, y - Pos.y};}
-    void UpdatePos(const double x, const double y) {Pos.x = x;Pos.y = y;}
+    void UpdateDir(const double x, const double y) const {dir_weapon = {x - pos_weapon.x, y - pos_weapon.y};}
+    void UpdatePos(const double x, const double y) {pos_weapon.x = x;pos_weapon.y = y;}
     void render(Position MousePos) const;
-    [[nodiscard]] double get_dx() const{return Dir.dx;}
-    [[nodiscard]] double get_dy() const{return Dir.dy;}
-    void Attack() const {
-        bullets.push_back(new Bullet("../rsc/Fireball.png", 8.0, Dir, {Pos.x + 25, Pos.y + 40}, 6, getDegree(Dir)));}
-    [[nodiscard]] int get_EnergyConsumed() const{return EnergyConsumed;}
+    [[nodiscard]] double get_dx() const{return dir_weapon.dx;}
+    [[nodiscard]] double get_dy() const{return dir_weapon.dy;}
+    void Attack() const {bullets.push_back(new Bullet(*bullet_type,
+            {pos_weapon.x - center_weapon.x + launch_point.x,
+                        pos_weapon.y - center_weapon.y + launch_point.y},dir_weapon));}
+    [[nodiscard]] int get_EnergyConsumed() const{return energy_consumed;}
 };
 
 

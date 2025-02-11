@@ -3,7 +3,7 @@
 //
 #include <game.h>
 
-Position MousePos = { 0.0, 0.0 };
+Position MousePos = { 750.0, 500.0 };
 int fps = 0;
 Uint32 tick;
 Hero *hero = nullptr;
@@ -12,7 +12,13 @@ bool IsQuit = false;
 
 
 void game() {
+
     tick = SDL_GetTicks();
+    constexpr int wall_num = std::size(walls_1);
+    for (int i = 0; i < wall_num; i++) {
+        walls.emplace_back(walls_1[i][0], walls_1[i][1], walls_1[i][2], walls_1[i][3]);
+    }
+
     while (!IsQuit) {
         SDL_Event event;
         while (SDL_PollEvent(&event) != 0) {
@@ -34,6 +40,8 @@ void game() {
             }
             bi_control();
         }
+
+        if (hero){hero->Move(MousePos);}
 
         display();
 
@@ -60,10 +68,9 @@ void display() {
     SDL_DestroyTexture(fps_texture);
     // 加载人物、武器、子弹
     if (hero) {
-        hero->render();
+        hero->render(MousePos);
         if (hero->getWeapon()) {
-            hero->getWeapon()->UpdatePos(hero->getX(), hero->getY());
-            hero->getWeapon()->UpdateDir(MousePos.x, MousePos.y);
+            hero->getWeapon()->UpdatePos(hero->getX(), hero->getY() - 20);
             hero->getWeapon()->render(MousePos);
         }
     }
@@ -81,7 +88,7 @@ void Render_ground_game() {
 }
 void Render_background() {
     LoadImage(background_texture, "../rsc/background.png");
-    constexpr SDL_Rect backgroundRect = {250, 0, 1007, 1000};
+    constexpr SDL_Rect backgroundRect = {307, 60, 885, 880};
     SDL_RenderCopy(app.renderer, background_texture, nullptr, &backgroundRect);
 }
 void Render_fps(const int fps) {
@@ -100,38 +107,38 @@ void do_keydown(const SDL_Event &event) {
         case SDL_SCANCODE_SPACE:
             LOG("Space Key Pressed");
         if (!hero)
-            hero = new Hero("../rsc/Hero.png");
+            hero = new Hero(hero_1);
         break;
         case SDL_SCANCODE_RETURN:
             LOG("Return Key Pressed");
         if (hero && !hero->getWeapon()) {
-            hero->setWeapon(new Weapon("../rsc/Shotgun.png"));
+            hero->setWeapon(new Weapon(weapon_1));
         }
         break;
-        case SDL_SCANCODE_UP:
-        case SDL_SCANCODE_W:
-            LOG("Up Key Pressed");
-        if (hero != nullptr)
-            hero->Move(0.0, -hero->getSpeed());
-        break;
-        case SDL_SCANCODE_DOWN:
-        case SDL_SCANCODE_S:
-            LOG("Down Key Pressed");
-        if (hero != nullptr)
-            hero->Move(0.0, hero->getSpeed());
-        break;
-        case SDL_SCANCODE_LEFT:
-        case SDL_SCANCODE_A:
-            LOG("Left Key Pressed");
-        if (hero != nullptr)
-            hero->Move(-hero->getSpeed(), 0.0);
-        break;
-        case SDL_SCANCODE_RIGHT:
-        case SDL_SCANCODE_D:
-            LOG("Right Key Pressed");
-        if (hero != nullptr)
-            hero->Move(hero->getSpeed(), 0.0);
-        break;
+        // case SDL_SCANCODE_UP:
+        // case SDL_SCANCODE_W:
+        //     LOG("Up Key Pressed");
+        // if (hero != nullptr)
+        //     hero->Move(0.0, -hero->getSpeed());
+        // break;
+        // case SDL_SCANCODE_DOWN:
+        // case SDL_SCANCODE_S:
+        //     LOG("Down Key Pressed");
+        // if (hero != nullptr)
+        //     hero->Move(0.0, hero->getSpeed());
+        // break;
+        // case SDL_SCANCODE_LEFT:
+        // case SDL_SCANCODE_A:
+        //     LOG("Left Key Pressed");
+        // if (hero != nullptr)
+        //     hero->Move(-hero->getSpeed(), 0.0);
+        // break;
+        // case SDL_SCANCODE_RIGHT:
+        // case SDL_SCANCODE_D:
+        //     LOG("Right Key Pressed");
+        // if (hero != nullptr)
+        //     hero->Move(hero->getSpeed(), 0.0);
+        // break;
         default:
             break;
     }
@@ -142,7 +149,7 @@ void do_mouse_down(const SDL_Event &event) {
         MousePos.y = event.button.y;
         if (hero != nullptr){
             if (Weapon *w = hero->getWeapon(); w != nullptr){
-                w->UpdatePos(hero->getX(), hero->getY());
+                w->UpdatePos(hero->getX(), hero->getY() - 20);
                 w->UpdateDir(MousePos.x, MousePos.y);
                 if (hero->getEnergy() - hero->getWeapon()->get_EnergyConsumed() >= 0){
                     w->Attack();
@@ -182,5 +189,25 @@ void bi_control() {
         LOG("Down and Right Key Pressed");
         if (hero != nullptr)
             hero->Move(hero->getSpeed() / Root_2, hero->getSpeed() / Root_2);
+    }
+    if (keyState[SDL_SCANCODE_UP] || keyState[SDL_SCANCODE_W]) {
+        if (hero != nullptr) {
+            hero->Move(0.0, -hero->getSpeed());
+        }
+    }
+    if (keyState[SDL_SCANCODE_DOWN] || keyState[SDL_SCANCODE_S]) {
+        if (hero != nullptr) {
+            hero->Move(0.0, hero->getSpeed());
+        }
+    }
+    if (keyState[SDL_SCANCODE_LEFT] || keyState[SDL_SCANCODE_A]) {
+        if (hero != nullptr) {
+            hero->Move(-hero->getSpeed(), 0.0);
+        }
+    }
+    if (keyState[SDL_SCANCODE_RIGHT] || keyState[SDL_SCANCODE_D]) {
+        if (hero != nullptr) {
+            hero->Move(hero->getSpeed(), 0.0);
+        }
     }
 }

@@ -16,6 +16,7 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include <complex>
 
 #define LOG(x) SDL_Log(x)
 #define LOG_ERROR(msg) SDL_Log(msg " Failed: %s", SDL_GetError());\
@@ -24,6 +25,8 @@
 
 constexpr int WINDOW_WIDTH = 1500;
 constexpr int WINDOW_HEIGHT = 1000;
+constexpr int FUNCTION_WIDTH = 269;
+constexpr int FUNCTION_HEIGHT = 134;
 constexpr double Root_2 = sqrt(2);
 constexpr int FPS = 60;                     //帧率
 
@@ -53,10 +56,41 @@ typedef struct DIRECTION {
 } Direction;
 
 
+class Collider {
+protected:
+    SDL_Rect collider;
+public:
+    Collider(const int x, const int y, const int width, const int height) {
+        collider.x = x;
+        collider.y = y;
+        collider.w = width;
+        collider.h = height;
+    }
+    bool checkCollision(const Collider& other) const {
+        if (std::abs(collider.x + collider.w / 2 - other.collider.x - other.collider.w / 2) <
+            std::min(collider.w / 2, other.collider.w / 2) ||
+            std::abs(collider.y + collider.h / 2 - other.collider.y - other.collider.h / 2) <
+            std::min(collider.h / 2, other.collider.h / 2))
+        return true;
+        return false;
+    }
+    const SDL_Rect *getCollider() const {
+        return &collider;
+    }
+    void setColliderPosition(const int x, const int y) {
+        collider.x = x;
+        collider.y = y;
+    }
+    void setColliderSize(const int width, const int height) {
+        collider.w = width;
+        collider.h = height;
+    }
+};
+
+
 extern APP app;
 inline SDL_Texture* background_texture = nullptr;
 inline SDL_Texture* fps_texture = nullptr;
-
 
 
 inline void Present(){
@@ -91,3 +125,18 @@ inline void LoadText(SDL_Texture *&texture, TTF_Font *font, const std::string& t
 }
 
 #endif //COMMON_H
+
+// if (std::abs(collider.x + collider.w / 2 - other.collider.x - other.collider.w / 2) <
+//             std::min(collider.w / 2, other.collider.w / 2)) {
+//     if (collider.x + collider.w / 2 < other.collider.x + other.collider.w / 2)
+//         code |= 1;                                   //撞左墙
+//     if (collider.x + collider.w / 2 > other.collider.x + other.collider.w / 2)
+//         code |= 2;                                   //撞右墙
+//             }
+// if (std::abs(collider.y + collider.h / 2 - other.collider.y - other.collider.h / 2) <
+//     std::min(collider.h / 2, other.collider.h / 2)) {
+//     if (collider.y + collider.h / 2 < other.collider.y + other.collider.h / 2)
+//         code |= 4;                                   //撞下墙
+//     if (collider.y + collider.h / 2 > other.collider.y + other.collider.h / 2)
+//         code |= 8;                                   //撞上墙
+//     }

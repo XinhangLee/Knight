@@ -5,29 +5,29 @@
 
 std::vector<Bullet*> initial_bullets;
 
-Weapon::Weapon(const std::string &imagePath): AttackPower(3),
-                                              EnergyConsumed(2.0),
-                                              Dir{1.0, 0.0},
-                                              Pos{0.0, 0.0},
-                                              texture(nullptr),
-                                              bullets(initial_bullets){
-    LoadImage(this->texture, imagePath);
+Weapon::Weapon(const s_weapons &w): attack_power(w.attack_power), energy_consumed(w.energy_consumed), dir_weapon{1.0, 0.0},pos_weapon{0.0, 0.0},
+    center_weapon(w.center_weapon), launch_point(w.launch_point), texture(nullptr), bullet_type(w.bullet_type), bullets(initial_bullets)
+{
+    LoadImage(this->texture, w.Path);
 }
 
-Weapon::~Weapon() {
+Weapon::~Weapon()
+{
     if (texture != nullptr) {
         SDL_DestroyTexture(texture);
     }
 }
 
-void Weapon::render(const Position MousePos) const {
-    const SDL_Rect rect = {static_cast<int>(Pos.x) + 7, static_cast<int>(Pos.y) + 37, 48, 12 };
-    constexpr SDL_Point center = {24,4};
+void Weapon::render(const Position MousePos) const
+{
+    UpdateDir(MousePos.x, MousePos.y);
+    const SDL_Rect rect = {static_cast<int>(pos_weapon.x) - center_weapon.x, static_cast<int>(pos_weapon.y) - center_weapon.y, 32, 32 };
+    // constexpr SDL_Point center = {12, 8};
     SDL_RendererFlip flip = SDL_FLIP_NONE;
-    if (MousePos.x - Pos.x > 0)
+    if (MousePos.x - pos_weapon.x < 0)
         flip = SDL_FLIP_HORIZONTAL;
-    SDL_RenderCopyEx(app.renderer, texture, nullptr, &rect, getDegree(Dir), &center, flip);
-
+    // SDL_RenderCopyEx(app.renderer, texture, nullptr, &rect, getDegree(Dir), &center, flip);
+    SDL_RenderCopyEx(app.renderer, texture, nullptr, &rect, 0.0, nullptr, flip);
     if (!bullets.empty()) {
         for (auto it = bullets.begin(); it != bullets.end();) {
             if (const auto bullet = *it; bullet->GetRect().x >= 1237 || bullet->GetRect().x <= 246 || bullet->GetRect().y >= 984 || bullet->GetRect().y <= 0) {
@@ -46,34 +46,3 @@ void Weapon::render(const Position MousePos) const {
         }
     }
 }
-
-
-
-
-
-Bullet::Bullet(const std::string &imagePath, const double speed, const Direction Dir, const Position Pos, const int FrameCount, const double degree):
-        Pos(Pos), Dir(Dir), speed(speed), texture(nullptr), currentFrame(0), FrameCount(FrameCount), degree(degree), rect(static_cast<int>(Pos.x), static_cast<int>(Pos.y), 16,16), is_first(true){
-    LoadImage(this->texture, imagePath);
-}
-Bullet::~Bullet() {
-    if (texture != nullptr) {
-        SDL_DestroyTexture(texture);
-    }
-}
-
-void Bullet::Update() {
-    const double len = sqrt(pow(Dir.dx, 2) + pow(Dir.dy, 2));
-    Pos.x += Dir.dx / len * speed;
-    Pos.y += Dir.dy / len * speed;
-
-    currentFrame = (currentFrame + 1) % FrameCount;
-}
-void Bullet::render() const {
-    is_first = false;
-    rect = {static_cast<int>(Pos.x), static_cast<int>(Pos.y), 16,16};
-    const SDL_Rect src_rect = {16 * currentFrame, 0, 16, 16};
-    SDL_RenderCopyEx(app.renderer, texture, &src_rect, &rect, degree, nullptr, SDL_FLIP_NONE);
-}
-
-
-

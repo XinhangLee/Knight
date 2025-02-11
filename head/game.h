@@ -6,6 +6,7 @@
 #define GAME_H
 
 #include <Elements/Hero.h>
+#include <Elements/Wall.h>
 
 void game();
 
