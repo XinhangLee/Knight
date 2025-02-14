@@ -4,7 +4,7 @@
 
 #include <Elements/Hero.h>
 
-Hero::Hero(const s_heroes &hero):Collider(static_cast<int>(hero.pos_hero.x), static_cast<int>(hero.pos_hero.y),49,81),
+Hero::Hero(const s_heroes &hero):Collider(static_cast<int>(hero.pos_hero.x), static_cast<int>(hero.pos_hero.y),49,81),Timer(hero.weapon_type->time_gap),
 HP{hero.HP[0],hero.HP[1]}, shield{hero.shield[0], hero.shield[1]},energy{hero.energy[0], hero.energy[1]}, speed(hero.speed), pos_hero(hero.pos_hero),
 center_hero(hero.center_hero),weapon_point(hero.weapon_point),dir_hero(0.0,0.0), frame_num(hero.frame_num), currentframe(0), weapon(nullptr),weapon_type(hero.weapon_type),
 texture{nullptr, nullptr, nullptr, nullptr}{
@@ -50,8 +50,8 @@ void Hero::Move(const Position MousePos) {
     if (pos[3] && dir_hero.dy > 0) {
         dir_hero.dy = 0.0;
     }
-    if (pos_hero.x > MousePos.x + 2.0 || pos_hero.x < MousePos.x - 2.0
-        || pos_hero.y > MousePos.y + 2.0 || pos_hero.y < MousePos.y - 2.0) {
+    if (pos_hero.x > MousePos.x + 50.0 || pos_hero.x < MousePos.x - 50.0
+        || pos_hero.y > MousePos.y + 50.0 || pos_hero.y < MousePos.y - 50.0) {
         if (const double len = sqrt(pow(dir_hero.dx, 2) + pow(dir_hero.dy, 2)); len != 0.0) {
             pos_hero.x += dir_hero.dx / len * speed;
             pos_hero.y += dir_hero.dy / len * speed;
@@ -61,8 +61,8 @@ void Hero::Move(const Position MousePos) {
     setColliderPosition(static_cast<int>(pos_hero.x) - center_hero.x, static_cast<int>(pos_hero.y) - center_hero.y);
 }
 void Hero::render(const Position MousePos) {
-    if (pos_hero.x <= MousePos.x + 2.0 && pos_hero.x >= MousePos.x - 2.0
-        && pos_hero.y <= MousePos.y + 2.0 && pos_hero.y >= MousePos.y - 2.0) {
+    if (pos_hero.x <= MousePos.x + 50.0 && pos_hero.x >= MousePos.x - 50.0
+        && pos_hero.y <= MousePos.y + 50.0 && pos_hero.y >= MousePos.y - 50.0) {
         if (texture[0]) {
             constexpr SDL_Rect srcrect = {0, 0, 49, 81};
             SDL_RenderCopy(app.renderer, texture[0], &srcrect, getCollider());
@@ -117,4 +117,9 @@ void Hero::render(const Position MousePos) {
 
     TTF_CloseFont(font);
 }
+void Hero::attack() const {
+    if (Time_out())
+    weapon->Attack();
+}
+
 

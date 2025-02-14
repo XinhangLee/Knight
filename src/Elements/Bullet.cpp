@@ -3,7 +3,8 @@
 //
 #include <Elements/Bullet.h>
 
-std::vector<Bullet*> hero_bullets;
+std::vector<Bullet*> bullets_hero;
+std::vector<Bullet*> bullets_monster;
 
 Bullet::Bullet(const s_bullets &bullet, const Position pos_bullet, const Direction dir_bullet):
         Collider(static_cast<int>(pos_bullet.x),static_cast<int>(pos_bullet.y), 16,16),

@@ -13,6 +13,7 @@ s_bullets const bullet_1 = {
     "../rsc/Fireball.png"
 };
 s_weapons const weapon_1 = {
+    200,
     {16,16},
     {16,6},
     &bullet_1,

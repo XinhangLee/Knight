@@ -63,26 +63,20 @@ class Collider {
 protected:
     SDL_Rect collider{};
 public:
-    Collider(const int x, const int y, const int width, const int height) {
-        collider.x = x;
-        collider.y = y;
-        collider.w = width;
-        collider.h = height;
-    }
-    [[nodiscard]] bool checkCollision(const Collider& other) const {
-        return SDL_HasIntersection(&collider, &other.collider);
-    }
-    [[nodiscard]] const SDL_Rect *getCollider() const {
-        return &collider;
-    }
-    void setColliderPosition(const int x, const int y) {
-        collider.x = x;
-        collider.y = y;
-    }
-    void setColliderSize(const int width, const int height) {
-        collider.w = width;
-        collider.h = height;
-    }
+    Collider(int x, int y, int width, int height);
+    [[nodiscard]] bool checkCollision(const Collider& other) const {return SDL_HasIntersection(&collider, &other.collider);}
+    [[nodiscard]] const SDL_Rect *getCollider() const {return &collider;}
+    void setColliderPosition(const int x, const int y) {collider.x = x;collider.y = y;}
+    void setColliderSize(const int width, const int height) {collider.w = width;collider.h = height;}
+};
+class Timer {
+protected:
+    mutable Uint32 last_time;
+    mutable Uint32 current_time;
+    Uint32 time_gap;
+public:
+    explicit Timer(const Uint32 time_gap):last_time(0), current_time(0), time_gap(time_gap){}
+    [[nodiscard]] bool Time_out() const;
 };
 
 

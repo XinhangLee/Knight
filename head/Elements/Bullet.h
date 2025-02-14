@@ -28,6 +28,7 @@ public:
     Position GetPos() const{return pos_bullet;}
 };
 
-extern std::vector<Bullet*> hero_bullets;
+extern std::vector<Bullet*> bullets_hero;
+extern std::vector<Bullet*> bullets_monster;
 
 #endif //BULLET_H

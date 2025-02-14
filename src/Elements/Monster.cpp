@@ -3,7 +3,7 @@
 //
 #include <Elements/Monster.h>
 
-Monster_type1 *monster_1;
+Monster_type2 *monster_1;
 
 Monster::Monster(const int HP, const int attack_power, const int range, const double speed_monster,
     const Position pos_monster, const SDL_Point center_monster):HP(HP), speed_monster(speed_monster),
@@ -27,6 +27,45 @@ void Monster::Hurt(const int attack) {
             HP = 0;
     }
 }
+
+
+Monster_type2::Monster_type2(const int HP, const int attack_power, const int range, const double speed_monster,
+    const Position pos_monster, const SDL_Point center_monster, const std::string &Path , const s_weapons &w):
+    Monster(HP, attack_power, range, speed_monster, pos_monster, center_monster),Timer(w.time_gap),
+    Collider(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y,49,81),
+    texture(nullptr), frame_num(7), current_frame(0), weapon(w, bullets_monster), alive(true) {
+    LoadImage(texture, Path);
+}
+Monster_type2::~Monster_type2() {
+    SDL_DestroyTexture(texture);
+}
+void Monster_type2::Move(const Hero &h) {
+    UpdateDir(h);
+    if (Distance(pos_monster, h.getPos()) >= 200.0) {
+        if (const double len = sqrt(pow(dir_monster.dx, 2) + pow(dir_monster.dy, 2)); len != 0.0) {
+            pos_monster.x += dir_monster.dx / len * speed_monster;
+            pos_monster.y += dir_monster.dy / len * speed_monster;
+        }
+    }
+    else {
+        weapon.setDir(dir_monster.dx, dir_monster.dy);
+        attack();
+    }
+    setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
+}
+
+void Monster_type2::Die() {
+    alive = false;
+}
+void Monster_type2::Render() const {
+    if (texture) {
+        const SDL_Rect srcrect = {current_frame * 49, 0, 49, 81};
+        SDL_RenderCopy(app.renderer, texture, &srcrect, getCollider());
+    }
+    weapon.UpdatePos(pos_monster.x + 2 , pos_monster.y + 16);
+    weapon.render();
+}
+
 
 
 
@@ -64,12 +103,10 @@ void Monster_type1::Move(const Hero &hero) {
             row = a * 4 + 3;
         }
     }
-    SDL_Log("pos2:%llf,%llf", pos_monster.x, pos_monster.y);
     if (const double len = sqrt(std::pow(dir_monster.dx, 2) + std::pow(dir_monster.dy, 2)); len != 0.0) {
         pos_monster.x += dir_monster.dx / len * speed_monster;
         pos_monster.y += dir_monster.dy / len * speed_monster;
     }
-    SDL_Log("pos1:%llf,%llf", pos_monster.x, pos_monster.y);
     setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
     current_frame = (current_frame + 1) % frame_num;
 }

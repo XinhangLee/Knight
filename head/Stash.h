@@ -29,6 +29,7 @@ struct s_bullets{
     std::string Path;
 };
 struct  s_weapons{
+    Uint32 time_gap;
     SDL_Point center_weapon;
     SDL_Point launch_point;
     const s_bullets *bullet_type;

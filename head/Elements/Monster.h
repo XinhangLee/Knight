@@ -30,6 +30,7 @@ public:
     void Hurt(int);
     void setSpeed(const int a){speed_monster *= a;}
 };
+
 // 碰撞型
 class Monster_type1 final : public Monster, public Collider {
     SDL_Texture *texture;
@@ -44,6 +45,23 @@ class Monster_type1 final : public Monster, public Collider {
     void Die();
     void Render() const;
 };
-extern Monster_type1 *monster_1;
+
+
+// 法杖类怪物
+class Monster_type2 final : public Monster, public Collider ,public Timer{
+    SDL_Texture *texture;
+    int frame_num;
+    int current_frame;
+    Weapon_type_1 weapon;
+    bool alive;
+public:
+    Monster_type2(int, int, int, double, Position, SDL_Point, const std::string &, const s_weapons &);
+    ~Monster_type2() override;
+    void Move(const Hero &);
+    void Die();
+    void Render() const;
+    void attack() const {if (Time_out())weapon.Attack();}
+};
+extern Monster_type2 *monster_1;
 
 #endif //MONSTER_H

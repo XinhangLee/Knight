@@ -8,7 +8,7 @@
 #include <common.h>
 #include <Elements/Weapon.h>
 
-class Hero : public Collider{
+class Hero : public Collider, public Timer{
     /*  []:
      *     0 : 总量
      *     1 : 余量
@@ -45,6 +45,7 @@ public:
     const s_weapons *getWeaponType() const {return weapon_type;}
     SDL_Point getWeaponPoint() const {return {weapon_point.x - center_hero.x, weapon_point.y - center_hero.y};}
     Position getPos() const {return pos_hero;}
+    void attack() const;
 };
 
 extern Hero *hero;
