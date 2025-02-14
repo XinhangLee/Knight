@@ -6,7 +6,7 @@
 #define GAME_H
 
 #include <Elements/Hero.h>
-#include <Elements/Wall.h>
+#include <Elements/Monster.h>
 
 void game();
 
@@ -17,6 +17,7 @@ void display();
 void do_keydown(const SDL_Event &);
 void do_mouse_down(const SDL_Event &);
 void do_mouse_motion(const SDL_Event &);
-void bi_control();
+void Fire();
+void CreateHero();
 
 #endif //GAME_H

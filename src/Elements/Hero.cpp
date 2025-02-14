@@ -3,12 +3,11 @@
 //
 
 #include <Elements/Hero.h>
-#include <Elements/Wall.h>
 
-Hero::Hero(const s_heroes &hero):Collider(hero.pos_hero.x, hero.pos_hero.y,128,128), HP{hero.HP[0],hero.HP[1]}, shield{hero.shield[0], hero.shield[1]},
-                                 energy{hero.energy[0], hero.energy[1]}, speed(hero.speed), pos_hero(hero.pos_hero), center_hero(hero.center_hero),
-                                 dir_hero(0.0,0.0), frame_num(hero.frame_num), currentframe(0), weapon(nullptr),weapon_type(hero.weapon_type),
-                                 texture{nullptr, nullptr, nullptr, nullptr}{
+Hero::Hero(const s_heroes &hero):Collider(static_cast<int>(hero.pos_hero.x), static_cast<int>(hero.pos_hero.y),49,81),
+HP{hero.HP[0],hero.HP[1]}, shield{hero.shield[0], hero.shield[1]},energy{hero.energy[0], hero.energy[1]}, speed(hero.speed), pos_hero(hero.pos_hero),
+center_hero(hero.center_hero),weapon_point(hero.weapon_point),dir_hero(0.0,0.0), frame_num(hero.frame_num), currentframe(0), weapon(nullptr),weapon_type(hero.weapon_type),
+texture{nullptr, nullptr, nullptr, nullptr}{
     //加载图像
     //人物静止
     LoadImage(this->texture[0], hero.StablePath);
@@ -25,7 +24,6 @@ Hero::~Hero() {
             SDL_DestroyTexture(i);
         }
     }
-    LOG("Hero Destroyed Successfully!");
 }
 void Hero::Move(const double dx, const double dy) {
     pos_hero.x += dx;
@@ -54,25 +52,25 @@ void Hero::Move(const Position MousePos) {
     }
     if (pos_hero.x > MousePos.x + 2.0 || pos_hero.x < MousePos.x - 2.0
         || pos_hero.y > MousePos.y + 2.0 || pos_hero.y < MousePos.y - 2.0) {
-        const double len = sqrt(pow(dir_hero.dx, 2) + pow(dir_hero.dy, 2));
-        pos_hero.x += dir_hero.dx / len * speed;
-        pos_hero.y += dir_hero.dy / len * speed;
+        if (const double len = sqrt(pow(dir_hero.dx, 2) + pow(dir_hero.dy, 2)); len != 0.0) {
+            pos_hero.x += dir_hero.dx / len * speed;
+            pos_hero.y += dir_hero.dy / len * speed;
+        }
         currentframe = (currentframe + 1) % frame_num;
         }
     setColliderPosition(static_cast<int>(pos_hero.x) - center_hero.x, static_cast<int>(pos_hero.y) - center_hero.y);
-
 }
 void Hero::render(const Position MousePos) {
     if (pos_hero.x <= MousePos.x + 2.0 && pos_hero.x >= MousePos.x - 2.0
         && pos_hero.y <= MousePos.y + 2.0 && pos_hero.y >= MousePos.y - 2.0) {
         if (texture[0]) {
-            constexpr SDL_Rect srcrect = {0, 0, 128, 128};
+            constexpr SDL_Rect srcrect = {0, 0, 49, 81};
             SDL_RenderCopy(app.renderer, texture[0], &srcrect, getCollider());
         }
     }
     else {
         if (texture[1]) {
-            const SDL_Rect srcrect = {128 * currentframe, 0, 128, 128};
+            const SDL_Rect srcrect = {49 * currentframe, 0, 49, 81};
             SDL_RendererFlip flip = SDL_FLIP_NONE;
             if (MousePos.x - pos_hero.x < 0)
                 flip = SDL_FLIP_HORIZONTAL;

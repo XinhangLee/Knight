@@ -7,11 +7,11 @@
 
 #include <common.h>
 #include <Elements/Bullet.h>
+#include <Elements/Wall.h>
 
 
 class Weapon{
-    int attack_power;
-    int energy_consumed;
+protected:
     mutable Direction dir_weapon;
     Position pos_weapon;
     SDL_Point center_weapon;
@@ -21,16 +21,25 @@ class Weapon{
     std::vector<Bullet *> &bullets;
 public:
     explicit Weapon(const s_weapons &);
-    ~Weapon();
+    virtual ~Weapon();
     void UpdateDir(const double x, const double y) const {dir_weapon = {x - pos_weapon.x, y - pos_weapon.y};}
     void UpdatePos(const double x, const double y) {pos_weapon.x = x;pos_weapon.y = y;}
-    void render(Position MousePos) const;
+
     [[nodiscard]] double get_dx() const{return dir_weapon.dx;}
     [[nodiscard]] double get_dy() const{return dir_weapon.dy;}
-    void Attack() const {bullets.push_back(new Bullet(*bullet_type,
+    const s_bullets *getBullet() const {return bullet_type;}
+    virtual void render(Position MousePos) const {}
+    virtual void Attack() const {}
+};
+
+class Weapon_type_1 final :public Weapon{//法杖类武器
+public:
+    explicit Weapon_type_1(const s_weapons &);
+    ~Weapon_type_1() override= default;
+    void render(Position MousePos) const override;
+    void Attack() const override {bullets.push_back(new Bullet(*bullet_type,
             {pos_weapon.x - center_weapon.x + launch_point.x,
                         pos_weapon.y - center_weapon.y + launch_point.y},dir_weapon));}
-    [[nodiscard]] int get_EnergyConsumed() const{return energy_consumed;}
 };
 
 

@@ -17,6 +17,9 @@
 #include <vector>
 #include <algorithm>
 #include <complex>
+#include <cstdlib>
+#include <ctime>
+#include <random>
 
 #define LOG(x) SDL_Log(x)
 #define LOG_ERROR(msg) SDL_Log(msg " Failed: %s", SDL_GetError());\
@@ -58,7 +61,7 @@ typedef struct DIRECTION {
 
 class Collider {
 protected:
-    SDL_Rect collider;
+    SDL_Rect collider{};
 public:
     Collider(const int x, const int y, const int width, const int height) {
         collider.x = x;
@@ -66,15 +69,10 @@ public:
         collider.w = width;
         collider.h = height;
     }
-    bool checkCollision(const Collider& other) const {
-        if (std::abs(collider.x + collider.w / 2 - other.collider.x - other.collider.w / 2) <
-            std::min(collider.w / 2, other.collider.w / 2) ||
-            std::abs(collider.y + collider.h / 2 - other.collider.y - other.collider.h / 2) <
-            std::min(collider.h / 2, other.collider.h / 2))
-        return true;
-        return false;
+    [[nodiscard]] bool checkCollision(const Collider& other) const {
+        return SDL_HasIntersection(&collider, &other.collider);
     }
-    const SDL_Rect *getCollider() const {
+    [[nodiscard]] const SDL_Rect *getCollider() const {
         return &collider;
     }
     void setColliderPosition(const int x, const int y) {
@@ -122,6 +120,9 @@ inline void LoadText(SDL_Texture *&texture, TTF_Font *font, const std::string& t
     if (texture == nullptr) {
         LOG_ERROR("Texture Create");
     }
+}
+inline double Distance(const Position p1, const Position p2) {
+    return std::sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
 }
 
 #endif //COMMON_H

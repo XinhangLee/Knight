@@ -19,29 +19,40 @@ Knight/
 │
 ├── head/
 │   ├── Elements/
+│   │   ├── Bullet.h
 │   │   ├── Hero.h
 │   │   ├── Monster.h
+│   │   ├── Wall.h
 │   │   └── Weapon.h
 │   ├── menu.h
 │   ├── game.h
 │   ├── common.h
+│   ├── Stash.h
 │   └── main.h
 │
 ├── rsc/
+│   ├── Aqua Staff.png
 │   ├── background.png
 │   ├── Fireball.png
 │   ├── Func.png
 │   ├── Hero.png
+│   ├── hero_Idle_1.png
+│   ├── hero_Idle_2.png
+│   ├── hero_Walk_1.png
+│   ├── hero_Walk_2.png
+│   ├── mystery-forest.png
 │   ├── Shotgun.png
 │   └── svgafix.fon
 │
 ├── src/
 │   ├── Elements/
-│   │   ├── Hero.h
-│   │   ├── Monster.h
-│   │   └── Weapon.h
-│   ├── menu.h
-│   ├── game.h
+│   │   ├── Bullet.cpp
+│   │   ├── Hero.cpp
+│   │   ├── Monster.cpp
+│   │   └── Weapon.cpp
+│   ├── menu.cpp
+│   ├── game.cpp
+│   ├── Stash.cpp
 │   └── main.cpp
 │
 └── .gitignore
@@ -93,7 +104,7 @@ public:
 ```
 ### 武器
 
-> <img src="./rsc/Shotgun.png" width="64" height="16" alt="Shotgun" title="Shotgun">
+> <img src="./rsc/Aqua%20Staff.png" width="64" height="64" alt="Shotgun" title="Shotgun">
 
 ```c++
 struct Weapon {

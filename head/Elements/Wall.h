@@ -14,19 +14,15 @@ public:
 
 inline std::vector<Wall> walls;
 template <typename T>
-int isColliding(const T& other) {
+int isColliding(const T& other) {//密码锁
     int code = 0;
-    if (std::abs(walls[0].getCollider()->x + walls[0].getCollider()->w / 2 - other.getCollider()->x - other.getCollider()->w / 2) <
-            std::min(walls[0].getCollider()->w / 2, other.getCollider()->w / 2))
+    if (walls[0].getCollider()->x + walls[0].getCollider()->w > other.getCollider()->x)
         {code |= 1;}
-    if (std::abs(walls[2].getCollider()->x + walls[2].getCollider()->w / 2 - other.getCollider()->x - other.getCollider()->w / 2) <
-            std::min(walls[2].getCollider()->w / 2, other.getCollider()->w / 2))
+    if (walls[1].getCollider()->y + walls[1].getCollider()->h > other.getCollider()->y + other.getCollider()->h)
+    {code |= 2;}
+    if (walls[2].getCollider()->x < other.getCollider()->x + other.getCollider()->w)
         {code |= 4;}
-    if (std::abs(walls[1].getCollider()->y + walls[1].getCollider()->h / 2 - other.getCollider()->y - other.getCollider()->h / 2) <
-            std::min(walls[1].getCollider()->h / 2, other.getCollider()->h / 2))
-        {code |= 2;}
-    if (std::abs(walls[3].getCollider()->y + walls[3].getCollider()->h / 2 - other.getCollider()->y - other.getCollider()->h / 2) <
-            std::min(walls[3].getCollider()->h / 2, other.getCollider()->h / 2))
+    if (walls[3].getCollider()->y < other.getCollider()->y + other.getCollider()->h)
         {code |= 8;}
     return code;
 }

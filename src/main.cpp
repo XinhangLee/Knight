@@ -11,6 +11,7 @@ APP app;
 int main(int argc, char* argv[]) {
     init_app();
 
+
     menu();
 
     atexit(&quit_app);

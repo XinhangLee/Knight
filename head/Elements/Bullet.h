@@ -8,7 +8,9 @@
 #include <common.h>
 #include <Stash.h>
 
-class Bullet {
+class Bullet :public Collider{
+    int attack_power;
+    int energy_consumed;
     Position pos_bullet;
     SDL_Point center_bullet;
     Direction dir_bullet;
@@ -16,17 +18,16 @@ class Bullet {
     int frame_current;
     int frame_num;
     SDL_Texture *texture;
-    mutable SDL_Rect dstrect_bullet;
     mutable bool is_first;
 public:
     Bullet(const s_bullets &bullet, Position pos_bullet, Direction dir_bullet);
     ~Bullet();
     void Update();
-    void render() const;
-    SDL_Rect &GetRect() const{return dstrect_bullet;}
+    void render();
     bool isFirst() const{return is_first;}
+    Position GetPos() const{return pos_bullet;}
 };
 
-extern std::vector<Bullet*> initial_bullets;
+extern std::vector<Bullet*> hero_bullets;
 
 #endif //BULLET_H

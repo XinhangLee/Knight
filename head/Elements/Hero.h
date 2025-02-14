@@ -7,7 +7,6 @@
 
 #include <common.h>
 #include <Elements/Weapon.h>
-#include <Stash.h>
 
 class Hero : public Collider{
     /*  []:
@@ -19,7 +18,8 @@ class Hero : public Collider{
     int energy[2];
     double speed;
     Position pos_hero;
-    SDL_Point center_hero;
+    SDL_Point center_hero;        //英雄坐标记录点
+    SDL_Point weapon_point;       //武器中心重合点
     mutable Direction dir_hero;
     int frame_num;
     int currentframe;
@@ -43,6 +43,8 @@ public:
     void Sub_energy(const int dx){energy[1] -= dx;}
     void UpdateDir(const Position p) const {dir_hero = {p.x - pos_hero.x,p.y - pos_hero.y };}
     const s_weapons *getWeaponType() const {return weapon_type;}
+    SDL_Point getWeaponPoint() const {return {weapon_point.x - center_hero.x, weapon_point.y - center_hero.y};}
+    Position getPos() const {return pos_hero;}
 };
 
 extern Hero *hero;

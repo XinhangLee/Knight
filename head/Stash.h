@@ -11,24 +11,24 @@ typedef struct s_heroes s_heroes;
 typedef struct s_weapons s_weapons;
 typedef struct s_bullets s_bullets;
 
-extern s_heroes const hero_1;
-extern s_heroes const hero_2;
+extern s_bullets const bullet_1;
 
 extern s_weapons const weapon_1;
 
-extern s_bullets const bullet_1;
+extern s_heroes const hero_1;
+extern s_heroes const hero_2;
 
 extern int walls_1[4][4];
 
 struct s_bullets{
+    int attack_power;
+    int energy_consumed;
     SDL_Point center_bullet;
     double speed_bullet;
     int frame_num;
     std::string Path;
 };
 struct  s_weapons{
-    int attack_power;
-    int energy_consumed;
     SDL_Point center_weapon;
     SDL_Point launch_point;
     const s_bullets *bullet_type;
@@ -41,6 +41,7 @@ struct s_heroes{
     double speed;
     Position pos_hero;
     SDL_Point center_hero;
+    SDL_Point weapon_point;
     const s_weapons *weapon_type;
     int frame_num;
     std::string StablePath;
