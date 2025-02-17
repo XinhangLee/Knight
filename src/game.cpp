@@ -38,8 +38,11 @@ void game() {
         }
         if (hero) {
             hero->Move(MousePos);
-            if (monster_1)
-            monster_1->Move(*hero);
+            if (!monster_1.empty()) {
+                for (const auto & i : monster_1) {
+                    i->Move(*hero);
+                }
+            }
         }
 
         display();
@@ -66,7 +69,7 @@ void do_keydown(const SDL_Event &event) {
         break;
         case SDL_SCANCODE_Z :
             if (hero) {
-                monster_1 = new Monster_type2(5,0,200,0.5,{700,500},{25,41},"../rsc/hero_Idle_1.png",weapon_1);
+                monster_1.push_back(new Monster_type2(5,0,200,3.5,{700,500},{24,24},"../rsc/ghost.png",weapon_1));
             }
         default:
             break;
@@ -98,33 +101,63 @@ void display() {
         hero->render(MousePos);
         if (hero->getWeapon()) {
             hero->getWeapon()->UpdatePos(hero->getWeaponPoint().x + hero->getX(), hero->getWeaponPoint().y + hero->getY());
-            hero->getWeapon()->render(MousePos);
+            hero->getWeapon()->render(hero->get_DirAttack());
         }
     }
     if (!bullets_hero.empty()) {
-        for (auto it = bullets_hero.begin(); it != bullets_hero.end();) {
-            if (const auto bullet = *it; isColliding(*bullet)) {
+        for (auto it_bullet = bullets_hero.begin(); it_bullet != bullets_hero.end();) {
+            auto bullet = *it_bullet;
+            if ( isColliding(*bullet)) {
                 delete bullet;
-                it = bullets_hero.erase(it);
+                it_bullet = bullets_hero.erase(it_bullet);
+                bullet = nullptr;
             }
-            else {
+            else if (!monster_1.empty()) {
+                for (const auto monster : monster_1) {
+                    if (bullet->checkCollision(*monster)) {
+                        monster->Hurt(bullet->get_attack_power());
+                        delete bullet;
+                        it_bullet = bullets_hero.erase(it_bullet);
+                        bullet = nullptr;
+                        break;
+                    }
+                }
+                for (auto it_monster = monster_1.begin(); it_monster != monster_1.end();) {
+                    if (const auto monster = *it_monster; !monster->getAlive()) {
+                        delete monster;
+                        it_monster = monster_1.erase(it_monster);
+                    }
+                    else {
+                        ++it_monster;
+                    }
+                }
+            }
+            if (bullet != nullptr){
                 if (bullet->isFirst())
                     bullet->render();
                 else {
                     bullet->Update();
                     bullet->render();
                 }
-                ++it;
+                ++it_bullet;
             }
         }
     }
-    if (monster_1)
-        monster_1->Render();
+    if (!monster_1.empty()) {
+        for (const auto monster : monster_1) {
+            monster->Render();
+        }
+    }
     if (!bullets_monster.empty()) {
-        for (auto it = bullets_monster.begin(); it != bullets_monster.end();) {
-            if (const auto bullet = *it; isColliding(*bullet)) {
+        for (auto it_bullet = bullets_monster.begin(); it_bullet != bullets_monster.end();) {
+            if (const auto bullet = *it_bullet; isColliding(*bullet)) {
                 delete bullet;
-                it = bullets_monster.erase(it);
+                it_bullet = bullets_monster.erase(it_bullet);
+            }
+            else if (bullet->checkCollision(*hero)) {
+                hero->Hurt(bullet->get_attack_power());
+                delete bullet;
+                it_bullet = bullets_monster.erase(it_bullet);
             }
             else {
                 if (bullet->isFirst())
@@ -133,7 +166,7 @@ void display() {
                     bullet->Update();
                     bullet->render();
                 }
-                ++it;
+                ++it_bullet;
             }
         }
     }

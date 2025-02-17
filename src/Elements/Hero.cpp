@@ -3,11 +3,12 @@
 //
 
 #include <Elements/Hero.h>
+#include <Elements/Monster.h>
 
 Hero::Hero(const s_heroes &hero):Collider(static_cast<int>(hero.pos_hero.x), static_cast<int>(hero.pos_hero.y),49,81),Timer(hero.weapon_type->time_gap),
-HP{hero.HP[0],hero.HP[1]}, shield{hero.shield[0], hero.shield[1]},energy{hero.energy[0], hero.energy[1]}, speed(hero.speed), pos_hero(hero.pos_hero),
-center_hero(hero.center_hero),weapon_point(hero.weapon_point),dir_hero(0.0,0.0), frame_num(hero.frame_num), currentframe(0), weapon(nullptr),weapon_type(hero.weapon_type),
-texture{nullptr, nullptr, nullptr, nullptr}{
+                                 HP{hero.HP[0],hero.HP[1]}, shield{hero.shield[0], hero.shield[1]},energy{hero.energy[0], hero.energy[1]}, speed(hero.speed), pos_hero(hero.pos_hero),center_hero(hero.center_hero),
+                                 weapon_point(hero.weapon_point),dir_hero(0.0,0.0),dir_attack(0.0,0.0), frame_num(hero.frame_num), currentframe(0), weapon(nullptr),weapon_type(hero.weapon_type),
+                                 texture{nullptr, nullptr, nullptr, nullptr}{
     //加载图像
     //人物静止
     LoadImage(this->texture[0], hero.StablePath);
@@ -60,7 +61,34 @@ void Hero::Move(const Position MousePos) {
         }
     setColliderPosition(static_cast<int>(pos_hero.x) - center_hero.x, static_cast<int>(pos_hero.y) - center_hero.y);
 }
+void Hero::UpdateDir(const Position p) const {
+    dir_hero = {p.x - pos_hero.x,p.y - pos_hero.y };
+    bool update = false;
+    if (!monster_1.empty()) {
+        auto min = DBL_MAX;
+        for (const auto & monster : monster_1) {
+            if (Distance(pos_hero, monster->getPos()) <= 500) {
+                if (Distance(pos_hero, monster->getPos()) < min) {
+                    min = Distance(pos_hero, monster->getPos());
+                    dir_attack = {monster->getPos().x - pos_hero.x, monster->getPos().y - pos_hero.y};
+                    update = true;
+                }
+            }
+        }
+    }
+    if (!update) {
+        dir_attack = {dir_hero.dx, dir_hero.dy};
+    }
+}
+
 void Hero::render(const Position MousePos) {
+    if (shield[1] < shield[0]) {
+        time2 = SDL_GetTicks();
+        if (time2 - time1 > 2000) {
+            shield[1]++;
+            time1 = time2;
+        }
+    }
     if (pos_hero.x <= MousePos.x + 50.0 && pos_hero.x >= MousePos.x - 50.0
         && pos_hero.y <= MousePos.y + 50.0 && pos_hero.y >= MousePos.y - 50.0) {
         if (texture[0]) {
@@ -119,7 +147,34 @@ void Hero::render(const Position MousePos) {
 }
 void Hero::attack() const {
     if (Time_out())
-    weapon->Attack();
+    weapon->Attack(dir_attack);
 }
+void Hero::Hurt(const int x) {
+    if (shield[1] != 0 ){
+        if (shield[1] - x >= 0)
+            shield[1] -= x;
+        else {
+            int extra = 0;
+            extra = x - shield[1];
+            shield[1] = 0;
+            if (HP[1] != 0) {
+                if (HP[1] - extra >= 0) {
+                    HP[1] -= extra;
+                }
+                else {
+                    HP[1] = 0;
+                }
+            }
+        }
+    }
+    else {
+        if (HP[1] - x >= 0)
+            HP[1] -= x;
+        else {
+            HP[1] = 0;
+        }
+    }
+}
+
 
 

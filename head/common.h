@@ -20,6 +20,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <random>
+#include <cfloat>
 
 #define LOG(x) SDL_Log(x)
 #define LOG_ERROR(msg) SDL_Log(msg " Failed: %s", SDL_GetError());\

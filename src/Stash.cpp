@@ -41,7 +41,7 @@ s_heroes const hero_2 = {
     {25,41},
     {27,57},
     &weapon_1,
-    8,
+    7,
     "../rsc/hero_Idle_2.png",
     "../rsc/hero_Walk_2.png"
 };

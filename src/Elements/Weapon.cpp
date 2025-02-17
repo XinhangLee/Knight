@@ -18,11 +18,12 @@ Weapon::~Weapon(){
 
 
 Weapon_type_1::Weapon_type_1(const s_weapons &w, std::vector<Bullet*>& bullets): Weapon(w, bullets) {}
-void Weapon_type_1::render(const Position MousePos) const{
-    UpdateDir(MousePos.x, MousePos.y);
+void Weapon_type_1::render(const Direction d) const{
+    setDir(d);
+
     const SDL_Rect rect = {static_cast<int>(pos_weapon.x) - center_weapon.x, static_cast<int>(pos_weapon.y) - center_weapon.y, 32, 32 };
     SDL_RendererFlip flip = SDL_FLIP_NONE;
-    if (MousePos.x - pos_weapon.x < 0)
+    if (dir_weapon.dx < 0)
         flip = SDL_FLIP_HORIZONTAL;
     SDL_RenderCopyEx(app.renderer, texture, nullptr, &rect, 0.0, nullptr, flip);
 }
@@ -32,6 +33,11 @@ void Weapon_type_1::render() const{
     if (dir_weapon.dx < 0)
         flip = SDL_FLIP_HORIZONTAL;
     SDL_RenderCopyEx(app.renderer, texture, nullptr, &rect, 0.0, nullptr, flip);
+}
+void Weapon_type_1::Attack(const Direction d) const {
+    setDir(d);
+    bullets.push_back(new Bullet(*bullet_type,{pos_weapon.x - center_weapon.x + launch_point.x,
+                                                           pos_weapon.y - center_weapon.y + launch_point.y},dir_weapon));
 }
 void Weapon_type_1::Attack() const {
     bullets.push_back(new Bullet(*bullet_type,{pos_weapon.x - center_weapon.x + launch_point.x,

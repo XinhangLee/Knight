@@ -23,12 +23,16 @@ protected:
     SDL_Point center_monster;
     Direction dir_monster;
     Position pos_monster;
+    bool alive;
 public:
     Monster(int, int, int, double, Position, SDL_Point);
     virtual ~Monster();
     void UpdateDir(const Hero &);
+    void UpdateDirRandom();
     void Hurt(int);
     void setSpeed(const int a){speed_monster *= a;}
+    [[nodiscard]] bool getAlive() const{return alive;}
+    [[nodiscard]] Position getPos() const{return pos_monster;}
 };
 
 // 碰撞型
@@ -53,7 +57,6 @@ class Monster_type2 final : public Monster, public Collider ,public Timer{
     int frame_num;
     int current_frame;
     Weapon_type_1 weapon;
-    bool alive;
 public:
     Monster_type2(int, int, int, double, Position, SDL_Point, const std::string &, const s_weapons &);
     ~Monster_type2() override;
@@ -62,6 +65,6 @@ public:
     void Render() const;
     void attack() const {if (Time_out())weapon.Attack();}
 };
-extern Monster_type2 *monster_1;
+extern std::vector<Monster_type2 *> monster_1;
 
 #endif //MONSTER_H

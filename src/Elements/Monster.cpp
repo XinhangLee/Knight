@@ -3,15 +3,12 @@
 //
 #include <Elements/Monster.h>
 
-Monster_type2 *monster_1;
+std::vector<Monster_type2 *> monster_1;
 
 Monster::Monster(const int HP, const int attack_power, const int range, const double speed_monster,
-    const Position pos_monster, const SDL_Point center_monster):HP(HP), speed_monster(speed_monster),
-attack_power(attack_power), range(range), center_monster(center_monster), dir_monster(0.0,0.0) ,pos_monster(pos_monster){
-    int angle = dis(gen);
-    angle = angle % 360 - 180;
-    dir_monster.dx = cos(angle);
-    dir_monster.dy = sin(angle);
+    const Position pos_monster, const SDL_Point center_monster):HP(HP), speed_monster(speed_monster), attack_power(attack_power),
+    range(range), center_monster(center_monster), dir_monster(0.0,0.0) ,pos_monster(pos_monster), alive(true){
+    UpdateDirRandom();
 }
 Monster::~Monster() = default;
 void Monster::UpdateDir(const Hero &hero) {
@@ -23,17 +20,26 @@ void Monster::Hurt(const int attack) {
     if (HP >= 0) {
         if (HP - attack >= 0)
             HP -= attack;
-        else
+        else {
             HP = 0;
+            alive = false;
+        }
     }
+}
+void Monster::UpdateDirRandom() {
+    int angle = dis(gen);
+    angle = angle % 360 - 180;
+    dir_monster.dx = cos(angle);
+    dir_monster.dy = sin(angle);
 }
 
 
 Monster_type2::Monster_type2(const int HP, const int attack_power, const int range, const double speed_monster,
     const Position pos_monster, const SDL_Point center_monster, const std::string &Path , const s_weapons &w):
-    Monster(HP, attack_power, range, speed_monster, pos_monster, center_monster),Timer(w.time_gap),
-    Collider(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y,49,81),
-    texture(nullptr), frame_num(7), current_frame(0), weapon(w, bullets_monster), alive(true) {
+    Monster(HP, attack_power, range, speed_monster, pos_monster, center_monster),
+    Collider(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y,48,48),
+    Timer(w.time_gap),
+    texture(nullptr), frame_num(8), current_frame(0), weapon(w, bullets_monster){
     LoadImage(texture, Path);
 }
 Monster_type2::~Monster_type2() {
@@ -41,6 +47,9 @@ Monster_type2::~Monster_type2() {
 }
 void Monster_type2::Move(const Hero &h) {
     UpdateDir(h);
+    if (isColliding(*this)) {
+        UpdateDirRandom();
+    }
     if (Distance(pos_monster, h.getPos()) >= 200.0) {
         if (const double len = sqrt(pow(dir_monster.dx, 2) + pow(dir_monster.dy, 2)); len != 0.0) {
             pos_monster.x += dir_monster.dx / len * speed_monster;
@@ -52,6 +61,7 @@ void Monster_type2::Move(const Hero &h) {
         attack();
     }
     setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
+    current_frame = (current_frame + 1) % frame_num;
 }
 
 void Monster_type2::Die() {
@@ -59,10 +69,10 @@ void Monster_type2::Die() {
 }
 void Monster_type2::Render() const {
     if (texture) {
-        const SDL_Rect srcrect = {current_frame * 49, 0, 49, 81};
+        const SDL_Rect srcrect = {current_frame * 16, 0, 16, 16};
         SDL_RenderCopy(app.renderer, texture, &srcrect, getCollider());
     }
-    weapon.UpdatePos(pos_monster.x + 2 , pos_monster.y + 16);
+    weapon.UpdatePos(pos_monster.x , pos_monster.y);
     weapon.render();
 }
 

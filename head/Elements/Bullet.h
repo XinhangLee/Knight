@@ -26,6 +26,7 @@ public:
     void render();
     bool isFirst() const{return is_first;}
     Position GetPos() const{return pos_bullet;}
+    int get_attack_power() const {return attack_power;}
 };
 
 extern std::vector<Bullet*> bullets_hero;

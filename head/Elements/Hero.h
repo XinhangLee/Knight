@@ -8,6 +8,9 @@
 #include <common.h>
 #include <Elements/Weapon.h>
 
+inline Uint32 time1 = 0;
+inline Uint32 time2 = 0;
+
 class Hero : public Collider, public Timer{
     /*  []:
      *     0 : 总量
@@ -21,6 +24,7 @@ class Hero : public Collider, public Timer{
     SDL_Point center_hero;        //英雄坐标记录点
     SDL_Point weapon_point;       //武器中心重合点
     mutable Direction dir_hero;
+    mutable Direction dir_attack;
     int frame_num;
     int currentframe;
     Weapon *weapon;
@@ -40,12 +44,14 @@ public:
     [[nodiscard]] double getSpeed() const{return speed;}
     [[nodiscard]] Weapon *getWeapon() const{return weapon;}
     void setWeapon(Weapon *w){weapon = w;}
-    void Sub_energy(const int dx){energy[1] -= dx;}
-    void UpdateDir(const Position p) const {dir_hero = {p.x - pos_hero.x,p.y - pos_hero.y };}
+    void Sub_energy(const int x){energy[1] -= x;}
+    void Hurt(int x);
+    void UpdateDir(Position p) const;
     const s_weapons *getWeaponType() const {return weapon_type;}
     SDL_Point getWeaponPoint() const {return {weapon_point.x - center_hero.x, weapon_point.y - center_hero.y};}
     Position getPos() const {return pos_hero;}
     void attack() const;
+    Direction get_DirAttack() const {return  dir_attack;}
 };
 
 extern Hero *hero;
