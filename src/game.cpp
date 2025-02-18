@@ -38,8 +38,8 @@ void game() {
         }
         if (hero) {
             hero->Move(MousePos);
-            if (!monster_1.empty()) {
-                for (const auto & i : monster_1) {
+            if (!monster.empty()) {
+                for (const auto & i : monster) {
                     i->Move(*hero);
                 }
             }
@@ -69,8 +69,14 @@ void do_keydown(const SDL_Event &event) {
         break;
         case SDL_SCANCODE_Z :
             if (hero) {
-                monster_1.push_back(new Monster_type2(5,0,200,3.5,{700,500},{24,24},"../rsc/ghost.png",weapon_1));
+                monster.push_back(new Monster_type3(5,0,200,3.5,{900,600},{41,36},"../rsc/Demon bat.png", bullet_2));
             }
+        break;
+        case SDL_SCANCODE_X:
+            if (hero) {
+                monster.push_back(new Monster_type2(5,0,200,3.5,{700,500},{24,24},"../rsc/ghost.png",weapon_1));
+            }
+        break;
         default:
             break;
     }
@@ -104,6 +110,7 @@ void display() {
             hero->getWeapon()->render(hero->get_DirAttack());
         }
     }
+    // 此处有点问题，随后修改。这个条件判断。
     if (!bullets_hero.empty()) {
         for (auto it_bullet = bullets_hero.begin(); it_bullet != bullets_hero.end();) {
             auto bullet = *it_bullet;
@@ -112,20 +119,21 @@ void display() {
                 it_bullet = bullets_hero.erase(it_bullet);
                 bullet = nullptr;
             }
-            else if (!monster_1.empty()) {
-                for (const auto monster : monster_1) {
-                    if (bullet->checkCollision(*monster)) {
-                        monster->Hurt(bullet->get_attack_power());
+            else if (!monster.empty()) {
+                for (const auto m : monster) {
+                    if (bullet->checkCollision(*m)) {
+                        m->Hurt(bullet->get_attack_power());
                         delete bullet;
                         it_bullet = bullets_hero.erase(it_bullet);
                         bullet = nullptr;
                         break;
                     }
                 }
-                for (auto it_monster = monster_1.begin(); it_monster != monster_1.end();) {
-                    if (const auto monster = *it_monster; !monster->getAlive()) {
-                        delete monster;
-                        it_monster = monster_1.erase(it_monster);
+                for (auto it_monster = monster.begin(); it_monster != monster.end();) {
+                    if (const auto m = *it_monster; m->getDelete()) {
+                        SDL_Log("1");
+                        delete m;
+                        it_monster = monster.erase(it_monster);
                     }
                     else {
                         ++it_monster;
@@ -143,8 +151,8 @@ void display() {
             }
         }
     }
-    if (!monster_1.empty()) {
-        for (const auto monster : monster_1) {
+    if (!monster.empty()) {
+        for (const auto monster : monster) {
             monster->Render();
         }
     }

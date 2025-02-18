@@ -7,13 +7,22 @@
 s_bullets const bullet_1 = {
     3,
     2,
+    200,
     {8,8},
-    10.0,
+    8.0,
     6,
     "../rsc/Fireball.png"
 };
-s_weapons const weapon_1 = {
+s_bullets const bullet_2 = {
+    3,
+    0,
     200,
+    {18,9},
+    8.0,
+    1,
+    "../rsc/projectile.png"
+};
+s_weapons const weapon_1 = {
     {16,16},
     {16,6},
     &bullet_1,

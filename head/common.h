@@ -78,6 +78,7 @@ protected:
 public:
     explicit Timer(const Uint32 time_gap):last_time(0), current_time(0), time_gap(time_gap){}
     [[nodiscard]] bool Time_out() const;
+    void Reset(Uint32 x);
 };
 
 

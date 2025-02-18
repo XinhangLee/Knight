@@ -17,3 +17,6 @@ bool Timer::Time_out() const {
     }
     return false;
 }
+void Timer::Reset(const Uint32 x) {
+    time_gap = x;
+}
