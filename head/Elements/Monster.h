@@ -18,7 +18,6 @@ class Monster :public Collider ,public Timer{
 protected:
     int HP;
     double speed_monster;
-    int attack_power;
     int range;
     SDL_Point center_monster;
     Direction dir_monster;
@@ -26,7 +25,7 @@ protected:
     bool alive;
     bool to_delete;
 public:
-    Monster(int, int, int, double, Position, SDL_Point);
+    Monster(int, int, double, Position, SDL_Point);
     virtual ~Monster();
     virtual void Move(const Hero&){}
     void UpdateDir(const Hero &);
@@ -49,7 +48,7 @@ class Monster_type2 final : public Monster{
     int current_frame;
     Weapon_type_1 weapon;
 public:
-    Monster_type2(int, int, int, double, Position, SDL_Point, const std::string &, const s_weapons &);
+    Monster_type2(int, int, double, Position, SDL_Point, const std::string &, const s_weapons &);
     ~Monster_type2() override;
     void Move(const Hero &) override;
     void Render() override;
@@ -65,7 +64,7 @@ class Monster_type3 final : public Monster{
     bool mode_attack;
     s_bullets bullet;
 public:
-    Monster_type3(int, int, int, double, Position, SDL_Point, const std::string &, const s_bullets &);
+    Monster_type3(int, int, double, Position, SDL_Point, const std::string &, const s_bullets &);
     ~Monster_type3() override;
     void Move(const Hero &) override;
     void Render() override;
@@ -75,6 +74,26 @@ public:
     void attack() const;
     void Die() override;
 };
+
+// Boss: COVID-19
+class Monster_type4 final : public Monster {
+    int HP_total;
+    SDL_Texture *texture[6];
+    int row[2];
+    int current_frame[4];
+    s_bullets bullet;
+    bool mode[3];// 记录该模式是否结束。
+    int times;
+public:
+    Monster_type4(int, int, double, Position, SDL_Point);
+    ~Monster_type4() override;
+    void Move(const Hero &) override;
+    void Render() override;
+    void attack() const;
+    void Die() override {alive = false;}
+    void UpdateAnimation();
+};
+
 
 extern std::vector<Monster *> monster;
 

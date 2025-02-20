@@ -3,13 +3,14 @@
 //
 #include <Elements/Monster.h>
 
+#include <utility>
+
 std::vector<Monster *> monster;
 
-Monster::Monster(const int HP, const int attack_power, const int range, const double speed_monster,
+Monster::Monster(const int HP, const int range, const double speed_monster,
     const Position pos_monster, const SDL_Point center_monster): Collider(0,0,0,0), Timer(0),
                                                                  HP(HP),
                                                                  speed_monster(speed_monster),
-                                                                 attack_power(attack_power),
                                                                  range(range), center_monster(center_monster),
                                                                  dir_monster(0.0, 0.0), pos_monster(pos_monster),
                                                                  alive(true), to_delete(false) {
@@ -48,10 +49,10 @@ void Monster::Die() {
 
 
 
-Monster_type2::Monster_type2(const int HP, const int attack_power, const int range, const double speed_monster,
+Monster_type2::Monster_type2(const int HP, const int range, const double speed_monster,
     const Position pos_monster, const SDL_Point center_monster, const std::string &Path , const s_weapons &w):
-    Monster(HP, attack_power, range, speed_monster, pos_monster, center_monster),
-    texture(nullptr), frame_num(8), current_frame(0), weapon(w, bullets_monster){
+    Monster(HP, range, speed_monster, pos_monster, center_monster),
+    texture(nullptr), frame_num(8), current_frame(-1), weapon(w, bullets_monster){
     setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
     setColliderSize(48,48);
     Reset(w.bullet_type->time_gap);
@@ -64,6 +65,23 @@ void Monster_type2::Move(const Hero &h) {
     UpdateDir(h);
     if (isColliding(*this)) {
         UpdateDirRandom();
+        int pos[4] = {};
+        const int code = isColliding(*this);
+        for (int i = 0; i < 4; i++) {
+            pos[i] = code & static_cast<int>(pow(2, i)) ? 1 : 0;
+        }
+        if (pos[0] && dir_monster.dx < 0) {
+            dir_monster.dx = 0.0;
+        }
+        if (pos[1] && dir_monster.dy < 0) {
+            dir_monster.dy = 0.0;
+        }
+        if (pos[2] && dir_monster.dx > 0) {
+            dir_monster.dx = 0.0;
+        }
+        if (pos[3] && dir_monster.dy > 0) {
+            dir_monster.dy = 0.0;
+        }
     }
     if (Distance(pos_monster, h.getPos()) >= 200.0) {
         if (const double len = sqrt(pow(dir_monster.dx, 2) + pow(dir_monster.dy, 2)); len != 0.0) {
@@ -99,10 +117,10 @@ void Monster_type2::Render(){
 
 
 
-Monster_type3::Monster_type3(const int HP, const int attack_power, const int range, const double speed_monster,
+Monster_type3::Monster_type3(const int HP, const int range, const double speed_monster,
     const Position pos_monster, const SDL_Point center_monster, const std::string &Path , const s_bullets &b):
-    Monster(HP, attack_power, range, speed_monster, pos_monster, center_monster),
-    texture(nullptr), frame_num{4,8,6}, current_frame{0,0,0}, row(0), mode_attack(false), bullet(b)
+    Monster(HP, range, speed_monster, pos_monster, center_monster),
+    texture(nullptr), frame_num{4,8,6}, current_frame{-1,-1,-1}, row(0), mode_attack(false), bullet(b)
     {
     setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
     setColliderSize(81,71);
@@ -131,6 +149,23 @@ void Monster_type3::Move(const Hero &h) {
     if (alive){
         if (isColliding(*this)) {
             UpdateDirRandom();
+            int pos[4] = {};
+            const int code = isColliding(*this);
+            for (int i = 0; i < 4; i++) {
+                pos[i] = code & static_cast<int>(pow(2, i)) ? 1 : 0;
+            }
+            if (pos[0] && dir_monster.dx < 0) {
+                dir_monster.dx = 0.0;
+            }
+            if (pos[1] && dir_monster.dy < 0) {
+                dir_monster.dy = 0.0;
+            }
+            if (pos[2] && dir_monster.dx > 0) {
+                dir_monster.dx = 0.0;
+            }
+            if (pos[3] && dir_monster.dy > 0) {
+                dir_monster.dy = 0.0;
+            }
         }
         UpdateDir(h);
         if (Distance(pos_monster, h.getPos()) >= 200.0) {
@@ -174,7 +209,6 @@ void Monster_type3::render_death() {
         flip = SDL_FLIP_HORIZONTAL;
     SDL_RenderCopyEx(app.renderer, texture, &srcrect, getCollider(), 0.0, &center_monster, flip);
     if (current_frame[row] == 5) {
-        SDL_Log("0");
         to_delete = true;
     }
 }
@@ -195,8 +229,135 @@ void Monster_type3::Die() {
 
 
 
+
+
+Monster_type4::Monster_type4(const int HP, const int range, const double speed_monster,
+    const Position pos_monster, const SDL_Point center_monster):
+    Monster(HP, range, speed_monster, pos_monster, center_monster), HP_total(HP), texture(nullptr),
+    row{-1,-1}, current_frame{-1,-1,-1,-1}, bullet(bullet_3), mode{false, false, false}, times(3){
+    setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
+    setColliderSize(222,246);
+    LoadImage(texture[0], "../rsc/covid-19-Idle-1.png");
+    LoadImage(texture[1], "../rsc/covid-19-Death-1.png");
+    LoadImage(texture[2], "../rsc/covid-19-Idle-2.png");
+    LoadImage(texture[3], "../rsc/covid-19-Death-2.png");
+    LoadImage(texture[4], "../rsc/covid-19-blood.png");
+}
+Monster_type4::~Monster_type4() {
+    SDL_DestroyTexture(texture[0]);
+    SDL_DestroyTexture(texture[1]);
+    SDL_DestroyTexture(texture[2]);
+    SDL_DestroyTexture(texture[3]);
+    SDL_DestroyTexture(texture[4]);
+    SDL_DestroyTexture(texture[5]);
+}
+void Monster_type4::Move(const Hero &h) {
+    if (alive){
+        if (isColliding(*this)) {
+            UpdateDirRandom();
+            int pos[4] = {};
+            const int code = isColliding(*this);
+            for (int i = 0; i < 4; i++) {
+                pos[i] = code & static_cast<int>(pow(2, i)) ? 1 : 0;
+            }
+            if (pos[0] && dir_monster.dx < 0) {
+                dir_monster.dx = 0.0;
+            }
+            if (pos[1] && dir_monster.dy < 0) {
+                dir_monster.dy = 0.0;
+            }
+            if (pos[2] && dir_monster.dx > 0) {
+                dir_monster.dx = 0.0;
+            }
+            if (pos[3] && dir_monster.dy > 0) {
+                dir_monster.dy = 0.0;
+            }
+        }
+        UpdateDir(h);
+        if (Distance(pos_monster, h.getPos()) >= 200.0) {
+            if (const double len = sqrt(pow(dir_monster.dx, 2) + pow(dir_monster.dy, 2)); len != 0.0) {
+                pos_monster.x += dir_monster.dx / len * speed_monster;
+                pos_monster.y += dir_monster.dy / len * speed_monster;
+            }
+        }
+        setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
+    }
+    UpdateAnimation();
+}
+void Monster_type4::UpdateAnimation() {
+    if (HP > HP_total / 2) {
+        current_frame[0] = (current_frame[0] + 1) % 8;
+        if (current_frame[0] == 0) {
+            row[0] = (row[0] + 1) % 4;
+        }
+    }
+    else if (HP <= HP_total / 2 && !mode[1]) {
+        mode[0] = true;
+        current_frame[1] = (current_frame[1] + 1) % 9;
+    }
+    else if (HP <= HP_total / 2 && HP > 0) {
+        current_frame[2] = (current_frame[2] + 1) % 8;
+        if (current_frame[2] == 0) {
+            row[1] = (row[1] + 1) % 4;
+        }
+    }
+    else if (HP <= 0){
+        Die();
+        mode[2] = true;
+        current_frame[3] = (current_frame[3] + 1) % 9;
+    }
+}
+void Monster_type4::Render() {
+    if (!mode[0]) {
+        const SDL_Rect srcrect = {222 * current_frame[0], 246 * row[0], 222, 246};
+        SDL_RenderCopy(app.renderer, texture[0], &srcrect, getCollider());
+    }
+    else if (!mode[1]) {
+        const SDL_Rect srcrect = {222 * current_frame[1], 0, 222, 246};
+        SDL_RenderCopy(app.renderer, texture[1], &srcrect, getCollider());
+        if (current_frame[1] == 8) {
+            if (times == 0) {
+                mode[1] = true;
+                setColliderSize(222,279);
+            } else {
+                times--;
+            }
+        }
+    }
+    else if (!mode[2]) {
+        const SDL_Rect srcrect = {222 * current_frame[2], 279 * row[1], 222, 279};
+        SDL_RenderCopy(app.renderer, texture[2], &srcrect, getCollider());
+    }
+    else {
+        const SDL_Rect srcrect = {222 * current_frame[3], 0, 222, 279};
+        SDL_RenderCopy(app.renderer, texture[3], &srcrect, getCollider());
+        if (current_frame[3] == 8) {
+            to_delete = true;
+        }
+    }
+    // 加载血条
+    constexpr SDL_Rect srcrect = {0,0,600,100};
+    SDL_Rect dstrect = {450,50,600,100};
+    SDL_RenderCopy(app.renderer, texture[4], &srcrect, &dstrect);
+
+    const int length = HP * 524 / HP_total;
+    dstrect = {450 + 37, 50 + 30, length, 36};
+    SDL_SetRenderDrawColor(app.renderer, 99,199,77, 0);
+    SDL_RenderFillRect(app.renderer, &dstrect);
+    // 名字
+    TTF_Font *font = TTF_OpenFont("../rsc/svgafix.fon", 0);
+    if (font == nullptr) {
+        LOG_ERROR("Font Open");
+    }
+    LoadText(this->texture[5], font, "COVID-19", RED);
+    dstrect = {650,67,200,66};
+    SDL_RenderCopy(app.renderer, texture[5], nullptr, &dstrect);
+}
+
+
+
 // // 暂时失败
-// Monster_type1::Monster_type1(const int HP, const int attack_power, const int range, const double speed_monster,
+// Monster_type1::Monster_type1(const int HP, const int range, const double speed_monster,
 //     const Position pos_monster, const SDL_Point center_monster, const std::string &Path):
 //     Monster(HP, attack_power, range, speed_monster, pos_monster, center_monster),
 //     Collider(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y, 150, 150),

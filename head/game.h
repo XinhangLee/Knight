@@ -13,6 +13,7 @@ void game();
 void Render_ground_game();
 void Render_background();
 void Render_fps(int);
+void Render_Elements();
 void display();
 void do_keydown(const SDL_Event &);
 void do_mouse_down(const SDL_Event &);

@@ -69,14 +69,18 @@ void do_keydown(const SDL_Event &event) {
         break;
         case SDL_SCANCODE_Z :
             if (hero) {
-                monster.push_back(new Monster_type3(5,0,200,3.5,{900,600},{41,36},"../rsc/Demon bat.png", bullet_2));
+                monster.push_back(new Monster_type3(5,200,3.5,{900,600},{41,36},"../rsc/Demon bat.png", bullet_2));
             }
         break;
         case SDL_SCANCODE_X:
             if (hero) {
-                monster.push_back(new Monster_type2(5,0,200,3.5,{700,500},{24,24},"../rsc/ghost.png",weapon_1));
+                monster.push_back(new Monster_type2(5,200,3.5,{700,500},{24,24},"../rsc/ghost.png",weapon_1));
             }
         break;
+        case SDL_SCANCODE_C:
+            if (hero) {
+                monster.push_back(new Monster_type4(20,200,0.5,{700,500},{111,123}));
+            }
         default:
             break;
     }
@@ -102,82 +106,7 @@ void display() {
     tick = SDL_GetTicks();
     Render_fps(fps);
     SDL_DestroyTexture(fps_texture);
-    // 加载人物、武器、子弹
-    if (hero) {
-        hero->render(MousePos);
-        if (hero->getWeapon()) {
-            hero->getWeapon()->UpdatePos(hero->getWeaponPoint().x + hero->getX(), hero->getWeaponPoint().y + hero->getY());
-            hero->getWeapon()->render(hero->get_DirAttack());
-        }
-    }
-    // 此处有点问题，随后修改。这个条件判断。
-    if (!bullets_hero.empty()) {
-        for (auto it_bullet = bullets_hero.begin(); it_bullet != bullets_hero.end();) {
-            auto bullet = *it_bullet;
-            if ( isColliding(*bullet)) {
-                delete bullet;
-                it_bullet = bullets_hero.erase(it_bullet);
-                bullet = nullptr;
-            }
-            else if (!monster.empty()) {
-                for (const auto m : monster) {
-                    if (bullet->checkCollision(*m)) {
-                        m->Hurt(bullet->get_attack_power());
-                        delete bullet;
-                        it_bullet = bullets_hero.erase(it_bullet);
-                        bullet = nullptr;
-                        break;
-                    }
-                }
-                for (auto it_monster = monster.begin(); it_monster != monster.end();) {
-                    if (const auto m = *it_monster; m->getDelete()) {
-                        SDL_Log("1");
-                        delete m;
-                        it_monster = monster.erase(it_monster);
-                    }
-                    else {
-                        ++it_monster;
-                    }
-                }
-            }
-            if (bullet != nullptr){
-                if (bullet->isFirst())
-                    bullet->render();
-                else {
-                    bullet->Update();
-                    bullet->render();
-                }
-                ++it_bullet;
-            }
-        }
-    }
-    if (!monster.empty()) {
-        for (const auto monster : monster) {
-            monster->Render();
-        }
-    }
-    if (!bullets_monster.empty()) {
-        for (auto it_bullet = bullets_monster.begin(); it_bullet != bullets_monster.end();) {
-            if (const auto bullet = *it_bullet; isColliding(*bullet)) {
-                delete bullet;
-                it_bullet = bullets_monster.erase(it_bullet);
-            }
-            else if (bullet->checkCollision(*hero)) {
-                hero->Hurt(bullet->get_attack_power());
-                delete bullet;
-                it_bullet = bullets_monster.erase(it_bullet);
-            }
-            else {
-                if (bullet->isFirst())
-                    bullet->render();
-                else {
-                    bullet->Update();
-                    bullet->render();
-                }
-                ++it_bullet;
-            }
-        }
-    }
+    Render_Elements();
     Present();
 }
 
@@ -203,6 +132,86 @@ void Render_fps(const int fps) {
     constexpr SDL_Rect fpsRect = {0, WINDOW_HEIGHT - 30, 80, 30};
     SDL_RenderCopy(app.renderer, fps_texture, nullptr, &fpsRect);
     TTF_CloseFont(font);
+}
+void Render_Elements() {
+    // 加载人物、武器、子弹、怪物
+    if (hero) {
+        hero->render(MousePos);
+        if (hero->getWeapon()) {
+            hero->getWeapon()->UpdatePos(hero->getWeaponPoint().x + hero->getX(), hero->getWeaponPoint().y + hero->getY());
+            hero->getWeapon()->render(hero->get_DirAttack());
+        }
+    }
+    // 检测英雄子弹并渲染
+    if (!bullets_hero.empty()) {
+        for (auto it_bullet = bullets_hero.begin(); it_bullet != bullets_hero.end();) {
+            auto bullet = *it_bullet;
+            if (isColliding(*bullet)) {
+                delete bullet;
+                it_bullet = bullets_hero.erase(it_bullet);
+                bullet = nullptr;
+            }
+            else if (!monster.empty()) {
+                for (const auto m : monster) {
+                    if (bullet->checkCollision(*m)) {
+                        m->Hurt(bullet->get_attack_power());
+                        delete bullet;
+                        it_bullet = bullets_hero.erase(it_bullet);
+                        bullet = nullptr;
+                        break;
+                    }
+                }
+            }
+            if (bullet != nullptr){
+                if (bullet->isFirst())
+                    bullet->render();
+                else {
+                    bullet->Update();
+                    bullet->render();
+                }
+                ++it_bullet;
+            }
+        }
+    }
+    // 杀死怪物
+    for (auto it_monster = monster.begin(); it_monster != monster.end();) {
+        if (const auto m = *it_monster; m->getDelete()) {
+            delete m;
+            it_monster = monster.erase(it_monster);
+        }
+        else {
+            ++it_monster;
+        }
+    }
+    // 渲染怪物
+    if (!monster.empty()) {
+        for (const auto monster : monster) {
+            monster->Render();
+        }
+    }
+    // 检测怪物子弹并渲染
+    if (!bullets_monster.empty()) {
+        for (auto it_bullet = bullets_monster.begin(); it_bullet != bullets_monster.end();) {
+            if (const auto bullet = *it_bullet; isColliding(*bullet)) {
+                delete bullet;
+                it_bullet = bullets_monster.erase(it_bullet);
+            }
+            else if (bullet->checkCollision(*hero)) {
+                hero->Hurt(bullet->get_attack_power());
+                delete bullet;
+                it_bullet = bullets_monster.erase(it_bullet);
+            }
+            else {
+                if (bullet->isFirst())
+                    bullet->render();
+                else {
+                    bullet->Update();
+                    bullet->render();
+                }
+                ++it_bullet;
+            }
+        }
+    }
 }
 void Fire() {
     if (hero != nullptr){
