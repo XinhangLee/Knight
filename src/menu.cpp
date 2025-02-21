@@ -75,14 +75,14 @@ void act_widget() {
     }
 }
 void start_action() {
-    LOG("Start");
+    SDL_Log("Start");
     newgame = new Game();
     if (newgame){
         newgame->game();
         delete newgame;
         newgame = nullptr;
     }
-    exit(0);
+    // exit(0);
 }
 void exit_action() {
     LOG("Exit");

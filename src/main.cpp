@@ -61,6 +61,7 @@ void Create_Window_Renderer() {
                                     // | SDL_WINDOW_MOUSE_GRABBED
                                     // | SDL_WINDOW_BORDERLESS
                                     // | SDL_WINDOW_ALWAYS_ON_TOP
+                                    // | SDL_WINDOW_FULLSCREEN
                                     );
     if (app.window == nullptr) {
         LOG_ERROR("Window Create");

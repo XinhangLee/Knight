@@ -6,23 +6,29 @@
 Game *newgame;
 
 Game::~Game() {
-    // delete hero;
-    // for (auto it = bullets_hero.begin(); it != bullets_hero.end(); ++it) {
-    //     delete *it;
-    // }
-    // bullets_hero.clear(); // 清空容器
-    //
-    // // 删除 bullets_monster 中的所有子弹
-    // for (auto it = bullets_monster.begin(); it != bullets_monster.end(); ++it) {
-    //     delete *it;
-    // }
-    // bullets_monster.clear(); // 清空容器
-    //
-    // // 删除 monster 中的所有怪物
-    // for (auto it = monster.begin(); it != monster.end(); ++it) {
-    //     delete *it;
-    // }
-    // monster.clear(); // 清空容器
+    delete hero;
+    hero = nullptr;
+    for (auto & it : bullets_hero) {
+        delete it;
+    }
+    bullets_hero.clear(); // 清空容器
+    bullets_hero.shrink_to_fit();
+
+    // 删除 bullets_monster 中的所有子弹
+    for (auto & it : bullets_monster) {
+        delete it;
+    }
+    bullets_monster.clear(); // 清空容器
+    bullets_monster.shrink_to_fit();
+
+    // 删除 monster 中的所有怪物
+    for (auto & it : monster) {
+        delete it;
+    }
+    monster.clear(); // 清空容器
+    monster.shrink_to_fit();
+    delete level;
+    level = nullptr;
 }
 
 void Game::game() {
