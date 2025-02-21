@@ -21,6 +21,11 @@
 #include <ctime>
 #include <random>
 #include <cfloat>
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <cstdlib>
+#endif
 
 #define LOG(x) SDL_Log(x)
 #define LOG_ERROR(msg) SDL_Log(msg " Failed: %s", SDL_GetError());\
@@ -32,7 +37,7 @@ constexpr int WINDOW_HEIGHT = 1000;
 constexpr int FUNCTION_WIDTH = 269;
 constexpr int FUNCTION_HEIGHT = 134;
 constexpr double Root_2 = sqrt(2);
-constexpr int FPS = 60;                     //帧率
+constexpr int FPS = 30;                     //帧率
 
 
 constexpr SDL_Color WHITE = {255,255,255,255};
@@ -77,9 +82,12 @@ protected:
     mutable Uint32 current_time;
     Uint32 time_gap;
 public:
+    virtual ~Timer() = default;
+
     explicit Timer(const Uint32 time_gap):last_time(0), current_time(0), time_gap(time_gap){}
     [[nodiscard]] bool Time_out() const;
     void Reset(Uint32 x);
+    void set_LastTime(const Uint32 x) const {last_time = x;}
 };
 
 
@@ -122,6 +130,16 @@ inline double Distance(const Position p1, const Position p2) {
     return std::sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
 }
 
+inline void showSystemMessageBox(const char* message, const char* title) {
+#ifdef _WIN32
+    // Windows 系统使用 MessageBox
+    MessageBox(nullptr, message, title, MB_OK | MB_ICONEXCLAMATION);
+#else
+    // 其他系统使用系统命令调用对话框工具
+    std::string command = "zenity --error --title=\"" + std::string(title) + "\" --text=\"" + std::string(message) + "\"";
+    system(command.c_str());
+#endif
+}
 #endif //COMMON_H
 
 // if (std::abs(collider.x + collider.w / 2 - other.collider.x - other.collider.w / 2) <

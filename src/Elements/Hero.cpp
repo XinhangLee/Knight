@@ -5,6 +5,8 @@
 #include <Elements/Hero.h>
 #include <Elements/Monster.h>
 
+Hero *hero;
+
 Hero::Hero(const s_heroes &hero):Collider(static_cast<int>(hero.pos_hero.x), static_cast<int>(hero.pos_hero.y),49,81),Timer(hero.weapon_type->bullet_type->time_gap),
                                  HP{hero.HP[0],hero.HP[1]}, shield{hero.shield[0], hero.shield[1]},energy{hero.energy[0], hero.energy[1]}, speed(hero.speed), pos_hero(hero.pos_hero),center_hero(hero.center_hero),
                                  weapon_point(hero.weapon_point),dir_hero(0.0,0.0),dir_attack(0.0,0.0), frame_num(hero.frame_num), currentframe(0), weapon(nullptr),weapon_type(hero.weapon_type),
@@ -147,9 +149,9 @@ void Hero::render(const Position MousePos) {
 }
 void Hero::attack() const {
     if (Time_out())
-    weapon->Attack(dir_attack);
+    weapon->Attack(dir_attack, dir_hero);
 }
-void Hero::Hurt(const int x) {
+void Hero::Hurt(const int x) const {
     if (shield[1] != 0 ){
         if (shield[1] - x >= 0)
             shield[1] -= x;
@@ -175,6 +177,18 @@ void Hero::Hurt(const int x) {
         }
     }
 }
+void Hero::Sub_energy(const int x) {
+    if (energy[1] - x >= 0 && energy[1] - x <= energy[0]) {
+        energy[1] -= x;
+    }
+    else if (energy[1] - x < 0) {
+        energy[1] = 0;
+    }
+    else if (energy[1] - x > energy[0]){
+        energy[1] = energy[0];
+    }
+}
+
 
 
 

@@ -30,9 +30,9 @@ public:
     [[nodiscard]] double get_dx() const{return dir_weapon.dx;}
     [[nodiscard]] double get_dy() const{return dir_weapon.dy;}
     const s_bullets *getBullet() const {return bullet_type;}
-    virtual void render(Direction) const {}
+    virtual void render(Direction, Direction) const{}
     virtual void render() const {}
-    virtual void Attack(Direction) const {}
+    virtual void Attack(Direction, Direction) const {}
     virtual void Attack() const {}
 };
 
@@ -41,9 +41,9 @@ class Weapon_type_1 final :public Weapon {
 public:
     explicit Weapon_type_1(const s_weapons &, std::vector<Bullet*>& );
     ~Weapon_type_1() override= default;
-    void render(Direction) const override;
+    void render(Direction, Direction) const override;
     void render() const override;
-    void Attack(Direction) const override;
+    void Attack(Direction, Direction) const override;
     void Attack() const override;
 };
 

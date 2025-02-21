@@ -26,7 +26,7 @@ protected:
     bool to_delete;
 public:
     Monster(int, int, double, Position, SDL_Point);
-    virtual ~Monster();
+    ~Monster() override;
     virtual void Move(const Hero&){}
     void UpdateDir(const Hero &);
     void UpdateDirRandom();
@@ -46,9 +46,10 @@ class Monster_type2 final : public Monster{
     SDL_Texture *texture;
     int frame_num;
     int current_frame;
+    SDL_Point staff_point;
     Weapon_type_1 weapon;
 public:
-    Monster_type2(int, int, double, Position, SDL_Point, const std::string &, const s_weapons &);
+    Monster_type2(int, int, double,SDL_Point, Position, SDL_Point, const std::string &, const s_weapons &);
     ~Monster_type2() override;
     void Move(const Hero &) override;
     void Render() override;

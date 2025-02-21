@@ -49,10 +49,10 @@ void Monster::Die() {
 
 
 
-Monster_type2::Monster_type2(const int HP, const int range, const double speed_monster,
+Monster_type2::Monster_type2(const int HP, const int range, const double speed_monster, const SDL_Point staff_point,
     const Position pos_monster, const SDL_Point center_monster, const std::string &Path , const s_weapons &w):
-    Monster(HP, range, speed_monster, pos_monster, center_monster),
-    texture(nullptr), frame_num(8), current_frame(-1), weapon(w, bullets_monster){
+    Monster(HP, range, speed_monster, pos_monster, center_monster),texture(nullptr),
+    frame_num(8), current_frame(-1), staff_point(staff_point), weapon(w, bullets_monster){
     setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
     setColliderSize(48,48);
     Reset(w.bullet_type->time_gap);
@@ -101,7 +101,7 @@ void Monster_type2::Render(){
         const SDL_Rect srcrect = {current_frame * 16, 0, 16, 16};
         SDL_RenderCopy(app.renderer, texture, &srcrect, getCollider());
     }
-    weapon.UpdatePos(pos_monster.x , pos_monster.y);
+    weapon.UpdatePos(pos_monster.x - center_monster.x + staff_point.x * 3, pos_monster.y - center_monster.y + staff_point.y * 3);
     weapon.render();
 }
 
@@ -213,8 +213,8 @@ void Monster_type3::render_death() {
     }
 }
 void Monster_type3::attack() const {
-    if (Time_out()) {
-        if (current_frame[row] == 4){
+    if (current_frame[row] == 4) {
+        if (Time_out()) {
             if (dir_monster.dx <= 0)
                 bullets_monster.push_back(new Bullet(bullet, {pos_monster.x - center_monster.x + 20, pos_monster.y - center_monster.y + 53}, dir_monster));
             else
@@ -234,7 +234,7 @@ void Monster_type3::Die() {
 Monster_type4::Monster_type4(const int HP, const int range, const double speed_monster,
     const Position pos_monster, const SDL_Point center_monster):
     Monster(HP, range, speed_monster, pos_monster, center_monster), HP_total(HP), texture(nullptr),
-    row{-1,-1}, current_frame{-1,-1,-1,-1}, bullet(bullet_3), mode{false, false, false}, times(3){
+    row{-1,-1}, current_frame{-1,-1,-1,-1}, bullet(bullet_4), mode{false, false, false}, times(3){
     setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
     setColliderSize(222,246);
     LoadImage(texture[0], "../rsc/covid-19-Idle-1.png");
@@ -242,6 +242,7 @@ Monster_type4::Monster_type4(const int HP, const int range, const double speed_m
     LoadImage(texture[2], "../rsc/covid-19-Idle-2.png");
     LoadImage(texture[3], "../rsc/covid-19-Death-2.png");
     LoadImage(texture[4], "../rsc/covid-19-blood.png");
+    Reset(1000);
 }
 Monster_type4::~Monster_type4() {
     SDL_DestroyTexture(texture[0]);
@@ -273,16 +274,18 @@ void Monster_type4::Move(const Hero &h) {
                 dir_monster.dy = 0.0;
             }
         }
-        UpdateDir(h);
-        if (Distance(pos_monster, h.getPos()) >= 200.0) {
             if (const double len = sqrt(pow(dir_monster.dx, 2) + pow(dir_monster.dy, 2)); len != 0.0) {
                 pos_monster.x += dir_monster.dx / len * speed_monster;
                 pos_monster.y += dir_monster.dy / len * speed_monster;
             }
-        }
         setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
     }
     UpdateAnimation();
+    if (Time_out()) {
+        if (checkCollision(h)) {
+            h.Hurt(2);
+        }
+    }
 }
 void Monster_type4::UpdateAnimation() {
     if (HP > HP_total / 2) {
@@ -306,6 +309,7 @@ void Monster_type4::UpdateAnimation() {
         mode[2] = true;
         current_frame[3] = (current_frame[3] + 1) % 9;
     }
+    attack();
 }
 void Monster_type4::Render() {
     if (!mode[0]) {
@@ -318,6 +322,7 @@ void Monster_type4::Render() {
         if (current_frame[1] == 8) {
             if (times == 0) {
                 mode[1] = true;
+                hero->Sub_energy(-150);
                 setColliderSize(222,279);
             } else {
                 times--;
@@ -353,6 +358,35 @@ void Monster_type4::Render() {
     dstrect = {650,67,200,66};
     SDL_RenderCopy(app.renderer, texture[5], nullptr, &dstrect);
 }
+void Monster_type4::attack() const {
+    if (!mode[0]) {
+        if ((current_frame[0] == 2 && row[0] == 0) || (current_frame[0] == 2 && row[0] == 2)) {
+            bullets_monster.push_back(new Bullet(bullet, {pos_monster.x, pos_monster.y - 106}, {0.0,-1.0}));
+        }
+        if ((current_frame[0] == 7 && row[0] == 0) || (current_frame[0] == 7 && row[0] == 2)) {
+            bullets_monster.push_back(new Bullet(bullet, {pos_monster.x - 120, pos_monster.y + 11}, {-1.0,0.0}));
+            bullets_monster.push_back(new Bullet(bullet, {pos_monster.x + 120, pos_monster.y + 11}, {1.0,0.0}));
+            bullets_monster.push_back(new Bullet(bullet, {pos_monster.x, pos_monster.y + 130}, {0.0,1.0}));
+            bullets_monster.push_back(new Bullet(bullet, {pos_monster.x - 105, pos_monster.y + 83}, {-10,6}));
+            bullets_monster.push_back(new Bullet(bullet, {pos_monster.x + 105, pos_monster.y + 83}, {10,6}));
+        }
+    }
+    else if (!mode[2]) {
+        if ((current_frame[2] == 2 && row[1] == 0) || (current_frame[2] == 2 && row[1] == 2)) {
+            bullets_monster.push_back(new Bullet(bullet, {pos_monster.x, pos_monster.y - 106}, {0.0,-1.0}));
+            bullets_monster.push_back(new Bullet(bullet, {pos_monster.x - 105, pos_monster.y -18}, {-10,-2}));
+            bullets_monster.push_back(new Bullet(bullet, {pos_monster.x + 105, pos_monster.y -18}, {10,-2}));
+        }
+        if ((current_frame[2] == 7 && row[1] == 0) || (current_frame[2] == 7 && row[1] == 2)) {
+            bullets_monster.push_back(new Bullet(bullet, {pos_monster.x - 120, pos_monster.y + 11}, {-1.0,0.0}));
+            bullets_monster.push_back(new Bullet(bullet, {pos_monster.x + 120, pos_monster.y + 11}, {1.0,0.0}));
+            bullets_monster.push_back(new Bullet(bullet, {pos_monster.x, pos_monster.y + 130}, {0.0,1.0}));
+            bullets_monster.push_back(new Bullet(bullet, {pos_monster.x - 105, pos_monster.y + 83}, {-10,6}));
+            bullets_monster.push_back(new Bullet(bullet, {pos_monster.x + 105, pos_monster.y + 83}, {10,6}));
+        }
+    }
+}
+
 
 
 

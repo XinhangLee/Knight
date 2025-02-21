@@ -76,7 +76,13 @@ void act_widget() {
 }
 void start_action() {
     LOG("Start");
-    game();
+    newgame = new Game();
+    if (newgame){
+        newgame->game();
+        delete newgame;
+        newgame = nullptr;
+    }
+    exit(0);
 }
 void exit_action() {
     LOG("Exit");
@@ -89,9 +95,9 @@ void Render_Widgets() {
         LoadText(texture, font, widgets[i].text, i == selection ? GRAY : WHITE);
         const int w = i == selection ? WIDGET_W * 0.8: WIDGET_W;
         const int h = i == selection ? WIDGET_H * 0.8: WIDGET_H;
-        const int x = i == selection ? widgets[i].x + WIDGET_W * 0.1 : widgets[i].x;
-        const int y = i == selection ? widgets[i].y + WIDGET_H * 0.1 : widgets[i].y;
-        SDL_Rect rect = {x, y, w, h};
+        const double x = i == selection ? widgets[i].x + WIDGET_W * 0.1 : widgets[i].x;
+        const double y = i == selection ? widgets[i].y + WIDGET_H * 0.1 : widgets[i].y;
+        SDL_Rect rect = {static_cast<int>(x), static_cast<int>(y), w, h};
         SDL_RenderCopy(app.renderer, texture, nullptr, &rect);
         SDL_DestroyTexture(texture);
     }

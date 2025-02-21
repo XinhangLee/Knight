@@ -17,6 +17,7 @@ extern s_bullets const bullet_3;
 extern s_bullets const bullet_4;
 
 extern s_weapons const weapon_1;
+extern s_weapons const weapon_2;
 
 extern s_heroes const hero_1;
 extern s_heroes const hero_2;

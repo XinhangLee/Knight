@@ -9,14 +9,14 @@ s_bullets const bullet_1 = {
     2,
     200,
     {8,8},
-    8.0,
+    12.0,
     6,
     "../rsc/Fireball.png"
 };
 s_bullets const bullet_2 = {
     3,
     0,
-    200,
+    400,
     {18,9},
     8.0,
     1,
@@ -25,31 +25,37 @@ s_bullets const bullet_2 = {
 s_bullets const bullet_3 = {
     3,
     0,
-    200,
+    500,
     {8,8},
     4.0,
-    1,
-    "../rsc/bullet1.png"
+    6,
+    "../rsc/Darkness Bolt.png"
 };
 s_bullets const bullet_4 = {
-    3,
-    0,
-    200,
-    {8,8},
-    8.0,
     1,
-    "../rsc/bullet2.png"
+    4,
+    500,
+    {8,8},
+    4.0,
+    6,
+    "../rsc/Magic Orb.png"
 };
 s_weapons const weapon_1 = {
     {16,16},
-    {16,6},
+    {27,4},
     &bullet_1,
-    "../rsc/Aqua Staff.png"
+    "../rsc/staff1.png"
+};
+s_weapons const weapon_2{
+    {16,16},
+    {27,4},
+    &bullet_3,
+    "../rsc/staff2.png"
 };
 s_heroes const hero_1 = {
-    {5,5},
-    {5,5},
-    {1000,1000},
+    {100,100},
+    {8,8},
+    {3000,3000},
     6.0,
     {750,460},
     {25,41},
@@ -60,8 +66,8 @@ s_heroes const hero_1 = {
     "../rsc/hero_Walk_1.png"
 };
 s_heroes const hero_2 = {
-    {5,5},
-    {5,5},
+    {10,10},
+    {8,8},
     {250,250},
     3.0,
     {750,460},

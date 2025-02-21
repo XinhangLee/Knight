@@ -3,15 +3,29 @@
 //
 #include <game.h>
 
-Position MousePos = { 750.0, 460.0 };
-int fps = 0;
-Uint32 tick;
-Hero *hero = nullptr;
-bool IsQuit = false;
+Game *newgame;
 
+Game::~Game() {
+    // delete hero;
+    // for (auto it = bullets_hero.begin(); it != bullets_hero.end(); ++it) {
+    //     delete *it;
+    // }
+    // bullets_hero.clear(); // 清空容器
+    //
+    // // 删除 bullets_monster 中的所有子弹
+    // for (auto it = bullets_monster.begin(); it != bullets_monster.end(); ++it) {
+    //     delete *it;
+    // }
+    // bullets_monster.clear(); // 清空容器
+    //
+    // // 删除 monster 中的所有怪物
+    // for (auto it = monster.begin(); it != monster.end(); ++it) {
+    //     delete *it;
+    // }
+    // monster.clear(); // 清空容器
+}
 
-
-void game() {
+void Game::game() {
     tick = SDL_GetTicks();
     for (auto & i : walls_1) {
         walls.emplace_back(i[0], i[1], i[2], i[3]);
@@ -25,13 +39,13 @@ void game() {
                 break;
                 case SDL_KEYDOWN:
                     do_keydown(event);
-                    break;
+                break;
                 case SDL_MOUSEBUTTONDOWN:
                     do_mouse_down(event);
-                    break;
+                break;
                 case SDL_MOUSEMOTION:
                     do_mouse_motion(event);
-                    break;
+                break;
                 default:
                     break;
             }
@@ -44,9 +58,14 @@ void game() {
                 }
             }
         }
+        level_control();
 
         display();
         SDL_Delay(1000 / FPS);
+        if (hero && hero->getHP() == 0){
+            showSystemMessageBox("Game Over!", "INFO");
+            IsQuit = true;
+        }
     }
     IsQuit = false;
 }
@@ -54,7 +73,7 @@ void game() {
 
 
 
-void do_keydown(const SDL_Event &event) {
+void Game::do_keydown(const SDL_Event &event) {
     switch (event.key.keysym.scancode) {
         case SDL_SCANCODE_ESCAPE:
             break;
@@ -74,27 +93,27 @@ void do_keydown(const SDL_Event &event) {
         break;
         case SDL_SCANCODE_X:
             if (hero) {
-                monster.push_back(new Monster_type2(5,200,3.5,{700,500},{24,24},"../rsc/ghost.png",weapon_1));
+                monster.push_back(new Monster_type2(5,200,3.5,{8,12},{700,500},{24,24},"../rsc/ghost.png",weapon_1));
             }
         break;
         case SDL_SCANCODE_C:
             if (hero) {
-                monster.push_back(new Monster_type4(20,200,0.5,{700,500},{111,123}));
+                monster.push_back(new Monster_type4(100,200,6.5,{700,500},{111,123}));
             }
         default:
             break;
     }
 }
-void do_mouse_down(const SDL_Event &event) {
+void Game::do_mouse_down(const SDL_Event &event) const {
     if (event.button.button == SDL_BUTTON_LEFT) {
         Fire();
     }
 }
-void do_mouse_motion(const SDL_Event &event) {
+void Game::do_mouse_motion(const SDL_Event &event) {
     MousePos.x = event.motion.x;
     MousePos.y = event.motion.y;
 }
-void display() {
+void Game::display() {
     SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, 255);
     SDL_RenderClear(app.renderer);
     // 加载背景、帧率
@@ -112,7 +131,7 @@ void display() {
 
 
 
-void Render_ground_game() {
+void Game::Render_ground_game() {
     SDL_Texture *texture = nullptr;
     LoadImage(texture, "../rsc/mystery-forest.png");
     constexpr SDL_Rect groundRect = {-180, 0, 1500, 1000};
@@ -121,25 +140,25 @@ void Render_ground_game() {
     SDL_RenderCopy(app.renderer, texture, nullptr, &groundRect2);
     SDL_DestroyTexture(texture);
 }
-void Render_background() {
+void Game::Render_background() {
     LoadImage(background_texture, "../rsc/background.png");
     constexpr SDL_Rect backgroundRect = {307, 60, 885, 880};
     SDL_RenderCopy(app.renderer, background_texture, nullptr, &backgroundRect);
 }
-void Render_fps(const int fps) {
+void Game::Render_fps(const int fps) {
     TTF_Font *font = TTF_OpenFont("../rsc/svgafix.fon", 30);
     LoadText(fps_texture, font, "FPS: " + std::to_string(fps), WHITE);
     constexpr SDL_Rect fpsRect = {0, WINDOW_HEIGHT - 30, 80, 30};
     SDL_RenderCopy(app.renderer, fps_texture, nullptr, &fpsRect);
     TTF_CloseFont(font);
 }
-void Render_Elements() {
+void Game::Render_Elements() const {
     // 加载人物、武器、子弹、怪物
     if (hero) {
         hero->render(MousePos);
         if (hero->getWeapon()) {
             hero->getWeapon()->UpdatePos(hero->getWeaponPoint().x + hero->getX(), hero->getWeaponPoint().y + hero->getY());
-            hero->getWeapon()->render(hero->get_DirAttack());
+            hero->getWeapon()->render(hero->get_DirAttack(), hero->get_Dir());
         }
     }
     // 检测英雄子弹并渲染
@@ -177,6 +196,7 @@ void Render_Elements() {
     for (auto it_monster = monster.begin(); it_monster != monster.end();) {
         if (const auto m = *it_monster; m->getDelete()) {
             delete m;
+            hero->Sub_energy(-5);
             it_monster = monster.erase(it_monster);
         }
         else {
@@ -213,7 +233,7 @@ void Render_Elements() {
         }
     }
 }
-void Fire() {
+void Game::Fire() const {
     if (hero != nullptr){
         if (const Weapon *w = hero->getWeapon(); w != nullptr){
             w->UpdatePos(hero->getWeaponPoint().x + hero->getX(), hero->getWeaponPoint().y + hero->getY());
@@ -225,10 +245,36 @@ void Fire() {
         }
     }
 }
-void CreateHero() {
+void Game::CreateHero() {
     if (!hero)
         hero = new Hero(hero_1);
     if (hero && !hero->getWeapon()) {
         hero->setWeapon(new Weapon_type_1(weapon_1, bullets_hero));
+    }
+    if (!level)
+        level = new Level1();
+}
+void Game::level_control() {
+    if (level) {
+        if (!level->getRunning(0))
+            level->run();
+        else if (monster.empty() && !level->getPass(0)) {
+            level->setPass(0);
+            if (!level->getRunning(1)) {
+                level->run();
+            }
+        }
+        else if (monster.empty() && !level->getPass(1)) {
+            level->setPass(1);
+            if (!level->getRunning(2)) {
+                level->run();
+            }
+        }
+        else if (monster.empty() && !level->getPass(2)) {
+            level->setPass(2);
+            delete level;
+            showSystemMessageBox("You Win!", "INFO");
+            IsQuit = true;
+        }
     }
 }
