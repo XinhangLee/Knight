@@ -92,11 +92,11 @@ void Render_Widgets() {
     TTF_Font *font = TTF_OpenFont("../rsc/svgafix.fon", 80);
     for (int i = 0; i < WIDGET_NUM; i++) {
         SDL_Texture *texture = nullptr;
-        LoadText(texture, font, widgets[i].text, i == selection ? GRAY : WHITE);
-        const int w = i == selection ? WIDGET_W * 0.8: WIDGET_W;
-        const int h = i == selection ? WIDGET_H * 0.8: WIDGET_H;
-        const double x = i == selection ? widgets[i].x + WIDGET_W * 0.1 : widgets[i].x;
-        const double y = i == selection ? widgets[i].y + WIDGET_H * 0.1 : widgets[i].y;
+        LoadText(texture, font, widgets[i].text, i == selection ? WHITE : GRAY);
+        const int w = i == selection ? WIDGET_W : WIDGET_W * 0.8;
+        const int h = i == selection ? WIDGET_H : WIDGET_H * 0.8;
+        const double x = i == selection ? widgets[i].x : widgets[i].x + WIDGET_W * 0.1 ;
+        const double y = i == selection ? widgets[i].y : widgets[i].y + WIDGET_H * 0.1 ;
         SDL_Rect rect = {static_cast<int>(x), static_cast<int>(y), w, h};
         SDL_RenderCopy(app.renderer, texture, nullptr, &rect);
         SDL_DestroyTexture(texture);

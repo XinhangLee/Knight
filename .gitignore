@@ -48,3 +48,8 @@ config.ini
 # 忽略测试生成的文件
 test-results/
 coverage/
+
+# 忽略文档生成的文件
+*.iss
+*.bat
+*.ico

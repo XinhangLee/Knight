@@ -53,9 +53,9 @@ s_weapons const weapon_2{
     "../rsc/staff2.png"
 };
 s_heroes const hero_1 = {
-    {100,100},
+    {20,20},
     {8,8},
-    {3000,3000},
+    {300,300},
     6.0,
     {750,460},
     {25,41},

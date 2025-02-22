@@ -5,12 +5,11 @@
 
 APP app;
 
+#undef main
 
 
-
-int main(int argc, char* argv[]) {
+int main() {
     init_app();
-
 
     menu();
 
@@ -58,10 +57,11 @@ void Create_Window_Renderer() {
                                     WINDOW_WIDTH,
                                     WINDOW_HEIGHT,
                                     SDL_WINDOW_SHOWN
-                                    // | SDL_WINDOW_MOUSE_GRABBED
-                                    // | SDL_WINDOW_BORDERLESS
+                                    | SDL_WINDOW_MOUSE_GRABBED
+                                    | SDL_WINDOW_BORDERLESS
                                     // | SDL_WINDOW_ALWAYS_ON_TOP
-                                    // | SDL_WINDOW_FULLSCREEN
+                                    // | SDL_WINDOW_FULLSCREEN_DESKTOP
+                                    | SDL_WINDOW_ALLOW_HIGHDPI
                                     );
     if (app.window == nullptr) {
         LOG_ERROR("Window Create");

@@ -279,6 +279,7 @@ void Game::level_control() {
         else if (monster.empty() && !level->getPass(2)) {
             level->setPass(2);
             delete level;
+            level = nullptr;
             showSystemMessageBox("You Win!", "INFO");
             IsQuit = true;
         }
