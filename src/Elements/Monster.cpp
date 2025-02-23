@@ -56,7 +56,7 @@ Monster_type2::Monster_type2(const int HP, const int range, const double speed_m
     setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
     setColliderSize(48,48);
     Reset(w.bullet_type->time_gap);
-    LoadImage(texture, Path);
+    Load_Image(texture, Path);
 }
 Monster_type2::~Monster_type2() {
     SDL_DestroyTexture(texture);
@@ -125,7 +125,7 @@ Monster_type3::Monster_type3(const int HP, const int range, const double speed_m
     setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
     setColliderSize(81,71);
     Reset(b.time_gap);
-    LoadImage(texture, Path);
+    Load_Image(texture, Path);
 }
 Monster_type3::~Monster_type3() {
     SDL_DestroyTexture(texture);
@@ -237,11 +237,11 @@ Monster_type4::Monster_type4(const int HP, const int range, const double speed_m
     row{-1,-1}, current_frame{-1,-1,-1,-1}, bullet(bullet_4), mode{false, false, false}, times(3){
     setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
     setColliderSize(222,246);
-    LoadImage(texture[0], "../rsc/covid-19-Idle-1.png");
-    LoadImage(texture[1], "../rsc/covid-19-Death-1.png");
-    LoadImage(texture[2], "../rsc/covid-19-Idle-2.png");
-    LoadImage(texture[3], "../rsc/covid-19-Death-2.png");
-    LoadImage(texture[4], "../rsc/covid-19-blood.png");
+    Load_Image(texture[0], "../rsc/monster/covid-19-Idle-1.png");
+    Load_Image(texture[1], "../rsc/monster/covid-19-Death-1.png");
+    Load_Image(texture[2], "../rsc/monster/covid-19-Idle-2.png");
+    Load_Image(texture[3], "../rsc/monster/covid-19-Death-2.png");
+    Load_Image(texture[4], "../rsc/monster/covid-19-blood.png");
     Reset(1000);
 }
 Monster_type4::~Monster_type4() {
@@ -323,6 +323,7 @@ void Monster_type4::Render() {
             if (times == 0) {
                 mode[1] = true;
                 hero->Sub_energy(-150);
+                setSpeed(2);
                 setColliderSize(222,279);
             } else {
                 times--;
@@ -350,12 +351,12 @@ void Monster_type4::Render() {
     SDL_SetRenderDrawColor(app.renderer, 99,199,77, 0);
     SDL_RenderFillRect(app.renderer, &dstrect);
     // 名字
-    TTF_Font *font = TTF_OpenFont("../rsc/svgafix.fon", 0);
+    TTF_Font *font = TTF_OpenFont("../rsc/font/svgafix.fon", 0);
     if (font == nullptr) {
         LOG_ERROR("Font Open");
     }
-    LoadText(this->texture[5], font, "COVID-19", RED);
-    dstrect = {650,67,200,66};
+    Load_Text(this->texture[5], font, "COVID-19", RED);
+    dstrect = {650,68,200,64};
     SDL_RenderCopy(app.renderer, texture[5], nullptr, &dstrect);
 }
 void Monster_type4::attack() const {
@@ -396,7 +397,7 @@ void Monster_type4::attack() const {
 //     Monster(HP, attack_power, range, speed_monster, pos_monster, center_monster),
 //     Collider(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y, 150, 150),
 //     texture(nullptr),frame_num(5), current_frame(0), row(0), alive(true) {
-//     LoadImage(texture, Path);
+//     Load_Image(texture, Path);
 // }
 // Monster_type1::~Monster_type1() {
 //     SDL_DestroyTexture(texture);

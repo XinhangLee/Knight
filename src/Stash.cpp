@@ -9,74 +9,74 @@ s_bullets const bullet_1 = {
     2,
     200,
     {8,8},
-    12.0,
+    8.0,
     6,
-    "../rsc/Fireball.png"
+    "../rsc/bullet/Fireball.png"
 };
 s_bullets const bullet_2 = {
     3,
     0,
-    400,
+    500,
     {18,9},
     8.0,
     1,
-    "../rsc/projectile.png"
+    "../rsc/bullet/projectile.png"
 };
 s_bullets const bullet_3 = {
     3,
     0,
     500,
     {8,8},
-    4.0,
+    8.0,
     6,
-    "../rsc/Darkness Bolt.png"
+    "../rsc/bullet/Darkness Bolt.png"
 };
 s_bullets const bullet_4 = {
     1,
     4,
     500,
     {8,8},
-    4.0,
+    8.0,
     6,
-    "../rsc/Magic Orb.png"
+    "../rsc/bullet/Magic Orb.png"
 };
 s_weapons const weapon_1 = {
     {16,16},
     {27,4},
     &bullet_1,
-    "../rsc/staff1.png"
+    "../rsc/weapon/staff1.png"
 };
 s_weapons const weapon_2{
     {16,16},
     {27,4},
     &bullet_3,
-    "../rsc/staff2.png"
+    "../rsc/weapon/staff2.png"
 };
 s_heroes const hero_1 = {
-    {20,20},
+    {100,100},
     {8,8},
-    {300,300},
+    {200,200},
     6.0,
     {750,460},
     {25,41},
     {27,57},
     &weapon_1,
     7,
-    "../rsc/hero_Idle_1.png",
-    "../rsc/hero_Walk_1.png"
+    "../rsc/hero/hero_Idle_1.png",
+    "../rsc/hero/hero_Walk_1.png"
 };
 s_heroes const hero_2 = {
-    {10,10},
+    {100,100},
     {8,8},
     {250,250},
-    3.0,
+    5.0,
     {750,460},
     {25,41},
     {27,57},
     &weapon_1,
     7,
-    "../rsc/hero_Idle_2.png",
-    "../rsc/hero_Walk_2.png"
+    "../rsc/hero/hero_Idle_2.png",
+    "../rsc/hero/hero_Walk_2.png"
 };
 int walls_1[4][4] = {
     {307, 60, 61, 880},//left

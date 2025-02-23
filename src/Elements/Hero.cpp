@@ -13,11 +13,11 @@ Hero::Hero(const s_heroes &hero):Collider(static_cast<int>(hero.pos_hero.x), sta
                                  texture{nullptr, nullptr, nullptr, nullptr}{
     //加载图像
     //人物静止
-    LoadImage(this->texture[0], hero.StablePath);
+    Load_Image(this->texture[0], hero.StablePath);
     //人物运动
-    LoadImage(this->texture[1], hero.WalkPath);
+    Load_Image(this->texture[1], hero.WalkPath);
     //功能性界面
-    LoadImage(this->texture[2], "../rsc/Func.png");
+    Load_Image(this->texture[2], "../rsc/sundry/Func.png");
 }
 
 Hero::~Hero() {
@@ -128,19 +128,19 @@ void Hero::render(const Position MousePos) {
     const std::string energy_Text = std::to_string(energy[1]) + " / " + std::to_string(energy[0]);
     const std::string shield_Text = std::to_string(shield[1]) + " / " + std::to_string(shield[0]);
 
-    TTF_Font *font = TTF_OpenFont("../rsc/svgafix.fon", 0);
+    TTF_Font *font = TTF_OpenFont("../rsc/font/svgafix.fon", 0);
     if (font == nullptr) {
         LOG_ERROR("Font Open");
     }
-    LoadText(this->texture[3], font, HP_Text, WHITE);
-    constexpr SDL_Rect HP_Text_Rect = { 87 + 65, 36, 40, 17 };
+    Load_Text(this->texture[3], font, HP_Text, WHITE);
+    constexpr SDL_Rect HP_Text_Rect = { 87 + 65, 36, 44, 17 };
     SDL_RenderCopy(app.renderer, texture[3], nullptr, &HP_Text_Rect);
     SDL_DestroyTexture(texture[3]);
-    LoadText(this->texture[3], font, energy_Text, WHITE);
-    constexpr SDL_Rect energy_Text_Rect = { 87 + 50, 76, 80, 17 };
+    Load_Text(this->texture[3], font, energy_Text, WHITE);
+    constexpr SDL_Rect energy_Text_Rect = { 87 + 50, 77, 76, 17 };
     SDL_RenderCopy(app.renderer, texture[3], nullptr, &energy_Text_Rect);
     SDL_DestroyTexture(texture[3]);
-    LoadText(this->texture[3], font, shield_Text, WHITE);
+    Load_Text(this->texture[3], font, shield_Text, WHITE);
     constexpr SDL_Rect shield_Text_Rect = { 87 + 65, 118, 40, 17 };
     SDL_RenderCopy(app.renderer, texture[3], nullptr, &shield_Text_Rect);
     SDL_DestroyTexture(texture[3]);

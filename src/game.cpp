@@ -5,30 +5,32 @@
 
 Game *newgame;
 
+
 Game::~Game() {
     delete hero;
     hero = nullptr;
-    for (auto & it : bullets_hero) {
+    for (const auto & it : bullets_hero) {
         delete it;
     }
     bullets_hero.clear(); // 清空容器
     bullets_hero.shrink_to_fit();
 
     // 删除 bullets_monster 中的所有子弹
-    for (auto & it : bullets_monster) {
+    for (const auto & it : bullets_monster) {
         delete it;
     }
     bullets_monster.clear(); // 清空容器
     bullets_monster.shrink_to_fit();
 
     // 删除 monster 中的所有怪物
-    for (auto & it : monster) {
+    for (const auto & it : monster) {
         delete it;
     }
     monster.clear(); // 清空容器
     monster.shrink_to_fit();
     delete level;
     level = nullptr;
+    SDL_DestroyTexture(render_target);
 }
 
 void Game::game() {
@@ -41,8 +43,9 @@ void Game::game() {
         while (SDL_PollEvent(&event) != 0) {
             switch (event.type) {
                 case SDL_QUIT:
+                    Mix_FreeMusic(music);
                     IsQuit = true;
-                break;
+                    exit(0);
                 case SDL_KEYDOWN:
                     do_keydown(event);
                 break;
@@ -52,6 +55,8 @@ void Game::game() {
                 case SDL_MOUSEMOTION:
                     do_mouse_motion(event);
                 break;
+                case SDL_WINDOWEVENT:
+                    do_window_event(event);
                 default:
                     break;
             }
@@ -69,6 +74,7 @@ void Game::game() {
         display();
         SDL_Delay(1000 / FPS);
         if (hero && hero->getHP() == 0){
+            Mix_FreeMusic(music);
             showSystemMessageBox("Game Over!", "INFO");
             IsQuit = true;
         }
@@ -82,9 +88,11 @@ void Game::game() {
 void Game::do_keydown(const SDL_Event &event) {
     switch (event.key.keysym.scancode) {
         case SDL_SCANCODE_ESCAPE:
+            Mix_FreeMusic(music);
+            IsQuit = true;
             break;
         case SDL_SCANCODE_SPACE:
-            IsQuit = true;
+            CreateHero();
         break;
         case SDL_SCANCODE_RETURN:
             CreateHero();
@@ -94,17 +102,17 @@ void Game::do_keydown(const SDL_Event &event) {
         break;
         case SDL_SCANCODE_Z :
             if (hero) {
-                monster.push_back(new Monster_type3(5,200,3.5,{900,600},{41,36},"../rsc/Demon bat.png", bullet_2));
+                monster.push_back(new Monster_type3(10,500,3.5,{900,600},{41,36},"../rsc/monster/Demon bat.png", bullet_2));
             }
         break;
         case SDL_SCANCODE_X:
             if (hero) {
-                monster.push_back(new Monster_type2(5,200,3.5,{8,12},{700,500},{24,24},"../rsc/ghost.png",weapon_1));
+                monster.push_back(new Monster_type2(10,500,3.5,{8,12},{700,500},{24,24},"../rsc/monster/ghost.png",weapon_2));
             }
         break;
         case SDL_SCANCODE_C:
             if (hero) {
-                monster.push_back(new Monster_type4(100,200,6.5,{700,500},{111,123}));
+                monster.push_back(new Monster_type4(200,500,6.5,{700,500},{111,123}));
             }
         default:
             break;
@@ -119,19 +127,38 @@ void Game::do_mouse_motion(const SDL_Event &event) {
     MousePos.x = event.motion.x;
     MousePos.y = event.motion.y;
 }
+void Game::do_window_event(const SDL_Event &event) {
+    if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+        screenWidth[0] = event.window.data1;
+        screenHeight[0] = event.window.data2;
+        if (screenWidth[0] / 3 >= screenHeight[0] / 2) {
+            screenWidth[1] = screenHeight[0] / 2 * 3;
+            screenHeight[1] = screenHeight[0];
+        }
+        else {
+            screenWidth[1] = screenWidth[0];
+            screenHeight[1] = screenWidth[0] / 3 * 2;
+        }
+    }
+}
+
 void Game::display() {
+    SDL_SetRenderTarget(app.renderer, render_target);
     SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, 255);
     SDL_RenderClear(app.renderer);
     // 加载背景、帧率
     Render_ground_game();
     Render_background();
     SDL_DestroyTexture(background_texture);
+    Render_Elements();
     const Uint32 duration = SDL_GetTicks() - tick;
     fps = 1000 / static_cast<int>(duration);
     tick = SDL_GetTicks();
     Render_fps(fps);
     SDL_DestroyTexture(fps_texture);
-    Render_Elements();
+    SDL_SetRenderTarget(app.renderer, nullptr); // 重置渲染目标为默认（屏幕）
+    const SDL_Rect screenDstRect = {(screenWidth[0] - screenWidth[1]) / 2, (screenHeight[0] - screenHeight[1]) / 2, screenWidth[1], screenHeight[1]};
+    SDL_RenderCopy(app.renderer, render_target, nullptr, &screenDstRect);
     Present();
 }
 
@@ -139,7 +166,7 @@ void Game::display() {
 
 void Game::Render_ground_game() {
     SDL_Texture *texture = nullptr;
-    LoadImage(texture, "../rsc/mystery-forest.png");
+    Load_Image(texture, "../rsc/sundry/mystery-forest.png");
     constexpr SDL_Rect groundRect = {-180, 0, 1500, 1000};
     constexpr SDL_Rect groundRect2 = {200, 0, 1500, 1000};
     SDL_RenderCopy(app.renderer, texture, nullptr, &groundRect);
@@ -147,13 +174,13 @@ void Game::Render_ground_game() {
     SDL_DestroyTexture(texture);
 }
 void Game::Render_background() {
-    LoadImage(background_texture, "../rsc/background.png");
+    Load_Image(background_texture, "../rsc/sundry/background.png");
     constexpr SDL_Rect backgroundRect = {307, 60, 885, 880};
     SDL_RenderCopy(app.renderer, background_texture, nullptr, &backgroundRect);
 }
 void Game::Render_fps(const int fps) {
-    TTF_Font *font = TTF_OpenFont("../rsc/svgafix.fon", 30);
-    LoadText(fps_texture, font, "FPS: " + std::to_string(fps), WHITE);
+    TTF_Font *font = TTF_OpenFont("../rsc/font/svgafix.fon", 30);
+    Load_Text(fps_texture, font, "FPS: " + std::to_string(fps), WHITE);
     constexpr SDL_Rect fpsRect = {0, WINDOW_HEIGHT - 30, 80, 30};
     SDL_RenderCopy(app.renderer, fps_texture, nullptr, &fpsRect);
     TTF_CloseFont(font);
@@ -252,6 +279,10 @@ void Game::Fire() const {
     }
 }
 void Game::CreateHero() {
+    Mix_Chunk *chunk;
+    Load_Chunk(chunk, "../rsc/mixer/Create Hero.wav");
+    SDL_Delay(500);
+    Mix_FreeChunk(chunk);
     if (!hero)
         hero = new Hero(hero_1);
     if (hero && !hero->getWeapon()) {
@@ -280,6 +311,7 @@ void Game::level_control() {
             level->setPass(2);
             delete level;
             level = nullptr;
+            Mix_FreeMusic(music);
             showSystemMessageBox("You Win!", "INFO");
             IsQuit = true;
         }

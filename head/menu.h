@@ -6,7 +6,6 @@
 #define MENU_H
 
 #include <common.h>
-#include <game.h>
 
 constexpr int TITLE_X = 500;
 constexpr int TITLE_Y = 200;
@@ -27,17 +26,28 @@ typedef struct {
     Action action;
 } Widget;
 
-void menu();
-void menu_render();
-void init_widget();
-void quit_widget();
-void prev_widget();
-void next_widget();
-void act_widget();
-void start_action();
-void exit_action();
-void Render_Widgets();
-void Render_Title();
-void Render_ground_menu();
+class Menu {
+    Widget *widgets;
+    int selection;
+    static int screenWidth[2];
+    static int screenHeight[2];
+    SDL_Texture *render_target;
+public:
+    Menu(): widgets(nullptr), selection(0), render_target(nullptr) {}
+    ~Menu();
+    void menu();
+    void menu_render() const;
+    void init_widget();
+    void quit_widget() const;
+    void prev_widget();
+    void next_widget();
+    void act_widget() const;
+    static void start_action();
+    static void exit_action();
+    void Render_Widgets() const;
+    static void Render_Title();
+    static void Render_ground_menu();
+};
+
 
 #endif //MENU_H

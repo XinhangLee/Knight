@@ -7,7 +7,7 @@
 
 
 #include <SDL2/SDL.h>
-// #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
@@ -94,7 +94,7 @@ public:
 extern APP app;
 inline SDL_Texture* background_texture = nullptr;
 inline SDL_Texture* fps_texture = nullptr;
-
+inline Mix_Music *music;
 
 inline void Present(){
     SDL_RenderPresent(app.renderer);
@@ -104,7 +104,7 @@ inline double getDegree(const Direction dir) {
     const double degree = radians * (180.0f / M_PI);
     return degree;
 }
-inline void LoadImage(SDL_Texture *&texture, const std::string &imagePath) {
+inline void Load_Image(SDL_Texture *&texture, const std::string &imagePath) {
     SDL_Surface* surface = IMG_Load(imagePath.c_str());
     if (surface == nullptr) {
         LOG_ERROR("Image Load");
@@ -115,7 +115,7 @@ inline void LoadImage(SDL_Texture *&texture, const std::string &imagePath) {
         LOG_ERROR("Texture Create");
     }
 }
-inline void LoadText(SDL_Texture *&texture, TTF_Font *font, const std::string& text, const SDL_Color color) {
+inline void Load_Text(SDL_Texture *&texture, TTF_Font *font, const std::string& text, const SDL_Color color) {
     SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
     if (surface == nullptr) {
         LOG_ERROR("Text Render");
@@ -125,6 +125,26 @@ inline void LoadText(SDL_Texture *&texture, TTF_Font *font, const std::string& t
     if (texture == nullptr) {
         LOG_ERROR("Texture Create");
     }
+}
+inline void Load_Music(Mix_Music *&music, const std::string& musicPath) {
+    music = Mix_LoadMUS(musicPath.c_str());
+    if (music == nullptr) {
+        LOG_ERROR("Music Load");
+    }
+    if (Mix_PlayMusic(music, -1) == -1) {
+        LOG_ERROR("Music Play");
+    }
+    Mix_VolumeMusic(32);
+}
+inline void Load_Chunk(Mix_Chunk *&chunk, const std::string& chunkPath) {
+    chunk = Mix_LoadWAV(chunkPath.c_str());
+    if (chunk == nullptr) {
+        LOG_ERROR("Chunk Load");
+    }
+    if (Mix_PlayChannel(-1, chunk, 0) == -1) {
+        LOG_ERROR("Chunk Play");
+    }
+    Mix_VolumeChunk(chunk, 64);
 }
 inline double Distance(const Position p1, const Position p2) {
     return std::sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
@@ -141,18 +161,3 @@ inline void showSystemMessageBox(const char* message, const char* title) {
 #endif
 }
 #endif //COMMON_H
-
-// if (std::abs(collider.x + collider.w / 2 - other.collider.x - other.collider.w / 2) <
-//             std::min(collider.w / 2, other.collider.w / 2)) {
-//     if (collider.x + collider.w / 2 < other.collider.x + other.collider.w / 2)
-//         code |= 1;                                   //撞左墙
-//     if (collider.x + collider.w / 2 > other.collider.x + other.collider.w / 2)
-//         code |= 2;                                   //撞右墙
-//             }
-// if (std::abs(collider.y + collider.h / 2 - other.collider.y - other.collider.h / 2) <
-//     std::min(collider.h / 2, other.collider.h / 2)) {
-//     if (collider.y + collider.h / 2 < other.collider.y + other.collider.h / 2)
-//         code |= 4;                                   //撞下墙
-//     if (collider.y + collider.h / 2 > other.collider.y + other.collider.h / 2)
-//         code |= 8;                                   //撞上墙
-//     }

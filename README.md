@@ -55,6 +55,8 @@ Knight/
 │   ├── Stash.cpp
 │   └── main.cpp
 │
+├── knight.iss
+│
 └── .gitignore
 ```
 
@@ -64,7 +66,7 @@ Knight/
 
 ### 人物
 
-> <img src="./rsc/Hero.png" width="64" height="64" alt="Hero" title="Hero">
+> <img src="rsc/hero/Hero.png" width="64" height="64" alt="Hero" title="Hero">
 
 ```c++
 class Hero {
@@ -125,9 +127,9 @@ struct Direction {
 #### 菜单
 #### 地牢场景
 
-> <img src="./rsc/background.png" width="128" height="128" alt="Shotgun" title="Shotgun">
+> <img src="rsc/sundry/background.png" width="128" height="128" alt="Shotgun" title="Shotgun">
 
 #### 功能性页面
 
-> ![功能性界面](./rsc/Func.png "功能性界面" )
+> ![功能性界面](rsc/sundry/Func.png "功能性界面" )
 

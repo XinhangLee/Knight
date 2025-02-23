@@ -2,14 +2,25 @@
 // Created by lixh1 on 25-2-8.
 //
 #include <menu.h>
+#include <game.h>
 
-static Widget *widgets;
-static int selection = 0;
 
-void menu() {
+int Menu::screenWidth[2] = {WINDOW_WIDTH, WINDOW_WIDTH};
+int Menu::screenHeight[2] = {WINDOW_HEIGHT, WINDOW_HEIGHT};
+
+Mix_Music *menu_music;
+
+Menu::~Menu() {
+    SDL_DestroyTexture(render_target);
+}
+
+
+void Menu::menu() {
+    Load_Music(menu_music, "../rsc/mixer/Mr.Cat - Bit Piano Music.mp3");
     bool IsQuit = false;
     SDL_Event event;
     init_widget();
+    render_target = SDL_CreateTexture(app.renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1500,1000);
     while (!IsQuit) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
@@ -38,13 +49,29 @@ void menu() {
                         break;
                 }
             }
+            if (event.type == SDL_WINDOWEVENT) {
+                if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                    screenWidth[0] = event.window.data1;
+                    screenHeight[0] = event.window.data2;
+                    if (screenWidth[0] / 3 >= screenHeight[0] / 2) {
+                        screenWidth[1] = screenHeight[0] / 2 * 3;
+                        screenHeight[1] = screenHeight[0];
+                    }
+                    else {
+                        screenWidth[1] = screenWidth[0];
+                        screenHeight[1] = screenWidth[0] / 3 * 2;
+                    }
+                }
+            }
 
         }
         menu_render();
     }
     quit_widget();
+    SDL_DestroyTexture(render_target);
 }
-void menu_render() {
+void Menu::menu_render() const {
+    SDL_SetRenderTarget(app.renderer, render_target);
     SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, 255);
     SDL_RenderClear(app.renderer);
     Render_ground_menu();
@@ -52,47 +79,65 @@ void menu_render() {
     Render_Title();
 
     Render_Widgets();
-
+    SDL_SetRenderTarget(app.renderer, nullptr); // 重置渲染目标为默认（屏幕）
+    const SDL_Rect screenDstRect = {(screenWidth[0] - screenWidth[1]) / 2, (screenHeight[0] - screenHeight[1]) / 2, screenWidth[1], screenHeight[1]};
+    SDL_RenderCopy(app.renderer, render_target, nullptr, &screenDstRect);
     Present();
 }
-void init_widget() {
+void Menu::init_widget() {
     widgets = new Widget[WIDGET_NUM];
     widgets[0] = (Widget){"Start", WIDGET_POS_X, WIDGET_POS_Y_TOP, start_action};
     widgets[1] = (Widget){"Exit", WIDGET_POS_X, WIDGET_POS_Y_TOP + WIDGET_POS_Y_GAP, exit_action};
 }
-void quit_widget() {
+void Menu::quit_widget() const {
     delete[] widgets;
 }
-void prev_widget() {
+void Menu::prev_widget() {
+    Mix_Chunk *chunk;
+    Load_Chunk(chunk, "../rsc/mixer/Change.wav");
+    SDL_Delay(50);
     selection = (selection - 1 + WIDGET_NUM) % WIDGET_NUM;
+    Mix_FreeChunk(chunk);
 }
-void next_widget() {
+void Menu::next_widget() {
+    Mix_Chunk *chunk;
+    Load_Chunk(chunk, "../rsc/mixer/Change.wav");
+    SDL_Delay(50);
     selection = (selection + 1) % WIDGET_NUM;
+    Mix_FreeChunk(chunk);
 }
-void act_widget() {
+void Menu::act_widget() const {
     if (const Action action = widgets[selection].action) {
         action();
     }
 }
-void start_action() {
+void Menu::start_action() {
+    Mix_Chunk *chunk;
+    Load_Chunk(chunk, "../rsc/mixer/Click.wav");
+    SDL_Delay(1000);
     SDL_Log("Start");
-    newgame = new Game();
-    if (newgame){
-        newgame->game();
-        delete newgame;
-        newgame = nullptr;
-    }
-    // exit(0);
+    Mix_FreeMusic(menu_music);
+    newgame = new Game(screenWidth[0], screenWidth[1], screenHeight[0], screenHeight[1]);
+    newgame->game();
+    Load_Music(menu_music, "../rsc/mixer/Mr.Cat - Bit Piano Music.mp3");
+    delete newgame;
+    newgame = nullptr;
+    Mix_FreeChunk(chunk);
 }
-void exit_action() {
+void Menu::exit_action(){
+    Mix_Chunk *chunk;
+    Load_Chunk(chunk, "../rsc/mixer/Click.wav");
     LOG("Exit");
+    SDL_Delay(1000);
+    Mix_FreeChunk(chunk);
+    Mix_FreeMusic(menu_music);
     exit(0);
 }
-void Render_Widgets() {
-    TTF_Font *font = TTF_OpenFont("../rsc/svgafix.fon", 80);
+void Menu::Render_Widgets() const {
+    TTF_Font *font = TTF_OpenFont("../rsc/font/svgafix.fon", 80);
     for (int i = 0; i < WIDGET_NUM; i++) {
         SDL_Texture *texture = nullptr;
-        LoadText(texture, font, widgets[i].text, i == selection ? WHITE : GRAY);
+        Load_Text(texture, font, widgets[i].text, i == selection ? WHITE : GRAY);
         const int w = i == selection ? WIDGET_W : WIDGET_W * 0.8;
         const int h = i == selection ? WIDGET_H : WIDGET_H * 0.8;
         const double x = i == selection ? widgets[i].x : widgets[i].x + WIDGET_W * 0.1 ;
@@ -103,18 +148,18 @@ void Render_Widgets() {
     }
     TTF_CloseFont(font);
 }
-void Render_Title() {
-    TTF_Font *font = TTF_OpenFont("../rsc/svgafix.fon", 100);
+void Menu::Render_Title() {
+    TTF_Font *font = TTF_OpenFont("../rsc/font/Darinia.ttf", 100);
     SDL_Texture *texture = nullptr;
-    LoadText(texture, font, "KNIGHT", RED);
+    Load_Text(texture, font, "KNIGHT", RED);
     constexpr SDL_Rect rect = {TITLE_X, TITLE_Y, TITLE_W, TITLE_H};
     SDL_RenderCopy(app.renderer, texture, nullptr, &rect);
     SDL_DestroyTexture(texture);
     TTF_CloseFont(font);
 }
-void Render_ground_menu() {
+void Menu::Render_ground_menu() {
     SDL_Texture *texture = nullptr;
-    LoadImage(texture, "../rsc/mystery-forest.png");
+    Load_Image(texture, "../rsc/sundry/mystery-forest.png");
     constexpr SDL_Rect groundRect = {0, 0, 1500, 1000};
     SDL_RenderCopy(app.renderer, texture, nullptr, &groundRect);
     SDL_DestroyTexture(texture);

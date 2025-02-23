@@ -7,7 +7,7 @@
 
 Weapon::Weapon(const s_weapons &w, std::vector<Bullet*>& bullets): dir_weapon{1.0, 0.0},pos_weapon{0.0, 0.0},
     center_weapon(w.center_weapon), launch_point(w.launch_point), texture(nullptr), bullet_type(w.bullet_type), bullets(bullets){
-    LoadImage(this->texture, w.Path);
+    Load_Image(this->texture, w.Path);
 }
 Weapon::~Weapon(){
     if (texture != nullptr) {
