@@ -7,7 +7,7 @@ s_bullets init_bullets(const std::string& type) {
     s_bullets b;
     using json = nlohmann::json;
     try {
-        std::ifstream file("../rsc/bullet/bullet.json");
+        std::ifstream file("../rsc/stash/bullet.json");
         if (!file.is_open()) {
             std::cerr << "Failed to open file" << std::endl;
             exit(1);
@@ -44,7 +44,7 @@ s_weapons init_weapons(const std::string& type) {
     s_weapons w;
     using json = nlohmann::json;
     try {
-        std::ifstream file("../rsc/weapon/weapon.json");
+        std::ifstream file("../rsc/stash/weapon.json");
         if (!file.is_open()) {
             std::cerr << "Failed to open file" << std::endl;
             exit(1);
@@ -82,7 +82,7 @@ s_heroes init_heroes(const std::string& type) {
     s_heroes h;
     using json = nlohmann::json;
     try {
-        std::ifstream file("../rsc/hero/hero.json");
+        std::ifstream file("../rsc/stash/hero.json");
         if (!file.is_open()) {
             std::cerr << "Failed to open file" << std::endl;
             exit(1);
@@ -124,6 +124,39 @@ s_heroes init_heroes(const std::string& type) {
         exit(1);
     }
     return h;
+}
+s_monsters init_monsters(const std::string& type) {
+    s_monsters m;
+    using json = nlohmann::json;
+    try {
+        std::ifstream file("../rsc/stash/monster.json");
+        if (!file.is_open()) {
+            std::cerr << "Failed to open file" << std::endl;
+            exit(1);
+        }
+        json j;
+        file >> j;
+        if (j.contains(type)) {
+            m.HP = j[type]["HP"];
+            m.range = j[type]["range"];
+            m.speed_monster = j[type]["speed_monster"];
+            m.center_monster.x = j[type]["center_monster"]["x"];
+            m.center_monster.y = j[type]["center_monster"]["y"];
+        }else {
+            std::cerr << "Monster type " << type << " not found in JSON file" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+    } catch (json::parse_error& ex) {
+        std::cerr << "JSON parse error: " << ex.what() << std::endl;
+        exit(1);
+    } catch (json::out_of_range& ex) {
+        std::cerr << "JSON out of range error: " << ex.what() << std::endl;
+        exit(1);
+    } catch (std::exception& ex) {
+        std::cerr << "Error: " << ex.what() << std::endl;
+        exit(1);
+    }
+    return m;
 }
 int walls_1[4][4] = {
     {307, 60, 61, 880},//left

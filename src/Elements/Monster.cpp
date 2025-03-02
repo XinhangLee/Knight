@@ -7,12 +7,11 @@
 
 std::vector<Monster *> monster;
 
-Monster::Monster(const int HP, const int range, const double speed_monster,
-    const Position pos_monster, const SDL_Point center_monster): Collider(0,0,0,0), Timer(0),
-                                                                 HP(HP),
-                                                                 speed_monster(speed_monster),
-                                                                 range(range), center_monster(center_monster),
-                                                                 dir_monster(0.0, 0.0), pos_monster(pos_monster),
+Monster::Monster(const s_monsters &m, const Position p): Collider(0,0,0,0), Timer(0),
+                                                                 HP(m.HP),
+                                                                 speed_monster(m.speed_monster),
+                                                                 range(m.range), center_monster(m.center_monster),
+                                                                 dir_monster(0.0, 0.0), pos_monster(p),
                                                                  alive(true), to_delete(false) {
     UpdateDirRandom();
 }
@@ -34,6 +33,7 @@ void Monster::Hurt(const int attack) {
     }
 }
 void Monster::UpdateDirRandom() {
+    std::uniform_int_distribution dis(0, 360);
     int angle = dis(gen);
     angle = angle % 360 - 180;
     dir_monster.dx = cos(angle);
@@ -49,19 +49,18 @@ void Monster::Die() {
 
 
 
-Monster_type2::Monster_type2(const int HP, const int range, const double speed_monster, const SDL_Point staff_point,
-    const Position pos_monster, const SDL_Point center_monster, const std::string &Path , const s_weapons &w):
-    Monster(HP, range, speed_monster, pos_monster, center_monster),texture(nullptr),
-    frame_num(8), current_frame(-1), staff_point(staff_point), weapon(w, bullets_monster){
+Skull::Skull(const s_monsters &m, const Position pos):
+    Monster(m, pos),texture(nullptr),
+    frame_num(8), current_frame(-1), staff_point{12,12}, weapon(init_weapons("weapon_2"), bullets_monster){
     setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
     setColliderSize(48,48);
-    Reset(w.bullet_type.time_gap);
-    Load_Image(texture, Path);
+    Reset(weapon.getBullet()->time_gap);
+    Load_Image(texture, "../rsc/monster/skull.png");
 }
-Monster_type2::~Monster_type2() {
+Skull::~Skull() {
     SDL_DestroyTexture(texture);
 }
-void Monster_type2::Move(const Hero &h) {
+void Skull::Move(const Hero &h) {
     UpdateDir(h);
     if (isColliding(*this)) {
         UpdateDirRandom();
@@ -96,7 +95,7 @@ void Monster_type2::Move(const Hero &h) {
     setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
     current_frame = (current_frame + 1) % frame_num;
 }
-void Monster_type2::Render(){
+void Skull::Render(){
     if (texture) {
         const SDL_Rect srcrect = {current_frame * 16, 0, 16, 16};
         SDL_RenderCopy(app.renderer, texture, &srcrect, getCollider());
@@ -117,20 +116,19 @@ void Monster_type2::Render(){
 
 
 
-Monster_type3::Monster_type3(const int HP, const int range, const double speed_monster,
-    const Position pos_monster, const SDL_Point center_monster, const std::string &Path , const s_bullets &b):
-    Monster(HP, range, speed_monster, pos_monster, center_monster),
-    texture(nullptr), frame_num{4,8,6}, current_frame{-1,-1,-1}, row(0), mode_attack(false), bullet(b)
+Demon_Bat::Demon_Bat(const s_monsters &m, const Position pos):
+    Monster(m,pos),
+    texture(nullptr), frame_num{4,8,6}, current_frame{-1,-1,-1}, row(0), mode_attack(false), bullet(init_bullets("bullet_2"))
     {
     setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
     setColliderSize(81,71);
-    Reset(b.time_gap);
-    Load_Image(texture, Path);
+    Reset(bullet.time_gap);
+    Load_Image(texture, "../rsc/monster/Demon bat.png");
 }
-Monster_type3::~Monster_type3() {
+Demon_Bat::~Demon_Bat() {
     SDL_DestroyTexture(texture);
 }
-void Monster_type3::Render() {
+void Demon_Bat::Render() {
     if (texture) {
         if (alive) {
             if (mode_attack) {
@@ -145,7 +143,7 @@ void Monster_type3::Render() {
         }
     }
 }
-void Monster_type3::Move(const Hero &h) {
+void Demon_Bat::Move(const Hero &h) {
     if (alive){
         if (isColliding(*this)) {
             UpdateDirRandom();
@@ -183,7 +181,7 @@ void Monster_type3::Move(const Hero &h) {
     }
     current_frame[row] = (current_frame[row] + 1) % frame_num[row];
 }
-void Monster_type3::render_attack() {
+void Demon_Bat::render_attack() {
     const SDL_Rect srcrect = {current_frame[row] * 81, row * 71, 81, 71};
     SDL_RendererFlip flip = SDL_FLIP_NONE;
     if (dir_monster.dx > 0)
@@ -194,14 +192,14 @@ void Monster_type3::render_attack() {
         mode_attack = false;
     }
 }
-void Monster_type3::render_move() const {
+void Demon_Bat::render_move() const {
     const SDL_Rect srcrect = {current_frame[row] * 81, row * 71, 81, 71};
     SDL_RendererFlip flip = SDL_FLIP_NONE;
     if (dir_monster.dx > 0)
         flip = SDL_FLIP_HORIZONTAL;
     SDL_RenderCopyEx(app.renderer, texture, &srcrect, getCollider(), 0.0, &center_monster, flip);
 }
-void Monster_type3::render_death() {
+void Demon_Bat::render_death() {
     row = 2;
     const SDL_Rect srcrect = {current_frame[row] * 81, row * 71, 81, 71};
     SDL_RendererFlip flip = SDL_FLIP_NONE;
@@ -212,7 +210,7 @@ void Monster_type3::render_death() {
         to_delete = true;
     }
 }
-void Monster_type3::attack() const {
+void Demon_Bat::attack() const {
     if (current_frame[row] == 4) {
         if (Time_out()) {
             if (dir_monster.dx <= 0)
@@ -222,7 +220,7 @@ void Monster_type3::attack() const {
         }
     }
 }
-void Monster_type3::Die() {
+void Demon_Bat::Die() {
     alive = false;
     row = 2;
 }
@@ -231,9 +229,8 @@ void Monster_type3::Die() {
 
 
 
-Monster_type4::Monster_type4(const int HP, const int range, const double speed_monster,
-    const Position pos_monster, const SDL_Point center_monster):
-    Monster(HP, range, speed_monster, pos_monster, center_monster), HP_total(HP), texture(nullptr),
+COVID_19::COVID_19(const s_monsters &m, const Position pos):
+    Monster(m, pos), HP_total(HP), texture(nullptr),
     row{-1,-1}, current_frame{-1,-1,-1,-1}, bullet(init_bullets("bullet_4")), mode{false, false, false}, times(3){
     setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
     setColliderSize(222,246);
@@ -244,7 +241,7 @@ Monster_type4::Monster_type4(const int HP, const int range, const double speed_m
     Load_Image(texture[4], "../rsc/monster/covid-19-blood.png");
     Reset(1000);
 }
-Monster_type4::~Monster_type4() {
+COVID_19::~COVID_19() {
     SDL_DestroyTexture(texture[0]);
     SDL_DestroyTexture(texture[1]);
     SDL_DestroyTexture(texture[2]);
@@ -252,7 +249,7 @@ Monster_type4::~Monster_type4() {
     SDL_DestroyTexture(texture[4]);
     SDL_DestroyTexture(texture[5]);
 }
-void Monster_type4::Move(const Hero &h) {
+void COVID_19::Move(const Hero &h) {
     if (alive){
         if (isColliding(*this)) {
             UpdateDirRandom();
@@ -287,7 +284,7 @@ void Monster_type4::Move(const Hero &h) {
         }
     }
 }
-void Monster_type4::UpdateAnimation() {
+void COVID_19::UpdateAnimation() {
     if (HP > HP_total / 2) {
         current_frame[0] = (current_frame[0] + 1) % 8;
         if (current_frame[0] == 0) {
@@ -311,7 +308,7 @@ void Monster_type4::UpdateAnimation() {
     }
     attack();
 }
-void Monster_type4::Render() {
+void COVID_19::Render() {
     if (!mode[0]) {
         const SDL_Rect srcrect = {222 * current_frame[0], 246 * row[0], 222, 246};
         SDL_RenderCopy(app.renderer, texture[0], &srcrect, getCollider());
@@ -359,7 +356,7 @@ void Monster_type4::Render() {
     dstrect = {650,68,200,64};
     SDL_RenderCopy(app.renderer, texture[5], nullptr, &dstrect);
 }
-void Monster_type4::attack() const {
+void COVID_19::attack() const {
     if (!mode[0]) {
         if ((current_frame[0] == 2 && row[0] == 0) || (current_frame[0] == 2 && row[0] == 2)) {
             bullets_monster.push_back(new Bullet(bullet, {pos_monster.x, pos_monster.y - 106}, {0.0,-1.0}));

@@ -1,0 +1,29 @@
+{
+  "Skull": {
+    "HP": 5,
+    "range": 200,
+    "speed_monster": 3.5,
+    "center_monster": {
+      "x": 41,
+      "y": 36
+    }
+  },
+  "Demon_Bat": {
+    "HP": 5,
+    "range": 300,
+    "speed_monster": 6.0,
+    "center_monster": {
+      "x": 24,
+      "y": 24
+    }
+  },
+  "COVID_19": {
+    "HP": 100,
+    "range": 200,
+    "speed_monster": 6.0,
+    "center_monster": {
+      "x": 111,
+      "y": 123
+    }
+  }
+}

@@ -10,12 +10,7 @@
 typedef struct s_heroes s_heroes;
 typedef struct s_weapons s_weapons;
 typedef struct s_bullets s_bullets;
-
-// extern s_weapons const weapon_1;
-// extern s_weapons const weapon_2;
-
-// extern s_heroes const hero_1;
-// extern s_heroes const hero_2;
+typedef struct s_monsters s_monsters;
 
 extern int walls_1[4][4];
 
@@ -47,8 +42,15 @@ struct s_heroes{
     std::string StablePath;
     std::string WalkPath;
 };
+struct s_monsters {
+    int HP;
+    double speed_monster;
+    int range;
+    SDL_Point center_monster;
+};
 
 s_bullets init_bullets(const std::string& type);
 s_weapons init_weapons(const std::string& type);
 s_heroes init_heroes(const std::string& type);
+s_monsters init_monsters(const std::string& type);
 #endif //STASH_H

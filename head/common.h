@@ -98,6 +98,9 @@ extern APP app;
 inline SDL_Texture* background_texture = nullptr;
 inline SDL_Texture* fps_texture = nullptr;
 inline Mix_Music *music;
+inline std::random_device rd;
+inline std::mt19937 gen(rd());
+
 
 inline void Present(){
     SDL_RenderPresent(app.renderer);

@@ -8,6 +8,10 @@
 #include <common.h>
 #include <Elements/Monster.h>
 
+static Position ran_pos();
+static int ran_num(int, int);
+
+
 class Level : public Timer{
 protected:
     bool pass[3];

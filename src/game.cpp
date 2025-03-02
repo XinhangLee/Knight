@@ -69,7 +69,7 @@ void Game::game() {
                 }
             }
         }
-        // level_control();
+        level_control();
 
         display();
         SDL_Delay(1000 / FPS);
@@ -100,17 +100,17 @@ void Game::do_keydown(const SDL_Event &event) {
         break;
         case SDL_SCANCODE_Z :
             if (hero) {
-                monster.push_back(new Monster_type3(10,500,3.5,{900,600},{41,36},"../rsc/monster/Demon bat.png", init_bullets("bullet_2")));
+                monster.push_back(new Demon_Bat(init_monsters("Demon_Bat"),{900,600}));
             }
         break;
         case SDL_SCANCODE_X:
             if (hero) {
-                monster.push_back(new Monster_type2(10,500,3.5,{8,12},{700,500},{24,24},"../rsc/monster/ghost.png",init_weapons("weapon_2")));
+                monster.push_back(new Skull(init_monsters("Skull"), {700,500}));
             }
         break;
         case SDL_SCANCODE_C:
             if (hero) {
-                monster.push_back(new Monster_type4(200,500,6.5,{700,500},{111,123}));
+                monster.push_back(new COVID_19(init_monsters("COVID_19"), {700,500}));
             }
         default:
             break;

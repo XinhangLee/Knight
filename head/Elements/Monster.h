@@ -10,10 +10,6 @@
 
 #include "Hero.h"
 
-inline std::random_device rd;
-inline std::mt19937 gen(rd());
-inline std::uniform_int_distribution dis(0, 360);
-
 class Monster :public Collider ,public Timer{
 protected:
     int HP;
@@ -25,7 +21,7 @@ protected:
     bool alive;
     bool to_delete;
 public:
-    Monster(int, int, double, Position, SDL_Point);
+    Monster(const s_monsters &, Position);
     ~Monster() override;
     virtual void Move(const Hero&){}
     void UpdateDir(const Hero &);
@@ -41,23 +37,22 @@ public:
 
 
 
-// 法杖类怪物
-class Monster_type2 final : public Monster{
+class Skull final : public Monster{
     SDL_Texture *texture;
     int frame_num;
     int current_frame;
     SDL_Point staff_point;
     Weapon_type_1 weapon;
 public:
-    Monster_type2(int, int, double,SDL_Point, Position, SDL_Point, const std::string &, const s_weapons &);
-    ~Monster_type2() override;
+    Skull(const s_monsters &, Position);
+    ~Skull() override;
     void Move(const Hero &) override;
     void Render() override;
     void attack() const {if (Time_out())weapon.Attack();}
 };
 
 // 恶魔蝙蝠
-class Monster_type3 final : public Monster{
+class Demon_Bat final : public Monster{
     SDL_Texture *texture;
     int frame_num[3];
     int current_frame[3];
@@ -65,8 +60,8 @@ class Monster_type3 final : public Monster{
     bool mode_attack;
     s_bullets bullet;
 public:
-    Monster_type3(int, int, double, Position, SDL_Point, const std::string &, const s_bullets &);
-    ~Monster_type3() override;
+    Demon_Bat(const s_monsters &m, Position pos);
+    ~Demon_Bat() override;
     void Move(const Hero &) override;
     void Render() override;
     void render_move() const;
@@ -77,7 +72,7 @@ public:
 };
 
 // Boss: COVID-19
-class Monster_type4 final : public Monster {
+class COVID_19 final : public Monster {
     int HP_total;
     SDL_Texture *texture[6];
     int row[2];
@@ -86,8 +81,8 @@ class Monster_type4 final : public Monster {
     bool mode[3];// 记录该模式是否结束。
     int times;
 public:
-    Monster_type4(int, int, double, Position, SDL_Point);
-    ~Monster_type4() override;
+    COVID_19(const s_monsters &, Position);
+    ~COVID_19() override;
     void Move(const Hero &) override;
     void Render() override;
     void attack() const;
