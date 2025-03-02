@@ -8,6 +8,9 @@
 > ***For  You***:
 > 
 >       诸君，于游戏之境，且行且赏，领略其中雅趣，方不负此番妙境。
+
+<iframe src="https://player.bilibili.com/player.html?bvid=BV1QV9gYpEcn" width="640" height="480" frameborder="0" allowfullscreen></iframe>
+
 ---
 
 ## 项目框架
