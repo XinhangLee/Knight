@@ -1,0 +1,46 @@
+{
+  "hero_1": {
+    "HP": [100, 100],
+    "shield": [8, 8],
+    "energy": [250, 250],
+    "speed": 6.0,
+    "pos_hero": {
+      "x": 750,
+      "y": 460
+    },
+    "center_hero": {
+      "x": 25,
+      "y": 41
+    },
+    "weapon_point": {
+      "x": 27,
+      "y": 57
+    },
+    "weapon_type": "weapon_1",
+    "frame_num": 7,
+    "StablePath": "../rsc/hero/hero_Idle_1.png",
+    "WalkPath": "../rsc/hero/hero_Walk_1.png"
+  },
+  "hero_2": {
+    "HP": [100, 100],
+    "shield": [8, 8],
+    "energy": [250, 250],
+    "speed": 5.0,
+    "pos_hero": {
+      "x": 750,
+      "y": 460
+    },
+    "center_hero": {
+      "x": 25,
+      "y": 41
+    },
+    "weapon_point": {
+      "x": 27,
+      "y": 57
+    },
+    "weapon_type": "weapon_1",
+    "frame_num": 7,
+    "StablePath": "../rsc/hero/hero_Idle_2.png",
+    "WalkPath": "../rsc/hero/hero_Walk_2.png"
+  }
+}

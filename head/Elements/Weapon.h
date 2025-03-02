@@ -18,7 +18,7 @@ protected:
     SDL_Point center_weapon;
     SDL_Point launch_point;
     SDL_Texture *texture;
-    const s_bullets *bullet_type;
+    s_bullets bullet_type;
     std::vector<Bullet *> &bullets;
 public:
     explicit Weapon(const s_weapons &, std::vector<Bullet*>&);
@@ -29,7 +29,7 @@ public:
     void setDir(const double x, const double y) const {dir_weapon = {x, y};}
     [[nodiscard]] double get_dx() const{return dir_weapon.dx;}
     [[nodiscard]] double get_dy() const{return dir_weapon.dy;}
-    const s_bullets *getBullet() const {return bullet_type;}
+    const s_bullets *getBullet() const {return &bullet_type;}
     virtual void render(Direction, Direction) const{}
     virtual void render() const {}
     virtual void Attack(Direction, Direction) const {}

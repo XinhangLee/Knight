@@ -7,7 +7,7 @@
 
 Hero *hero;
 
-Hero::Hero(const s_heroes &hero):Collider(static_cast<int>(hero.pos_hero.x), static_cast<int>(hero.pos_hero.y),49,81),Timer(hero.weapon_type->bullet_type->time_gap),
+Hero::Hero(const s_heroes &hero):Collider(static_cast<int>(hero.pos_hero.x), static_cast<int>(hero.pos_hero.y),49,81),Timer(hero.weapon_type.bullet_type.time_gap),
                                  HP{hero.HP[0],hero.HP[1]}, shield{hero.shield[0], hero.shield[1]},energy{hero.energy[0], hero.energy[1]}, speed(hero.speed), pos_hero(hero.pos_hero),center_hero(hero.center_hero),
                                  weapon_point(hero.weapon_point),dir_hero(0.0,0.0),dir_attack(0.0,0.0), frame_num(hero.frame_num), currentframe(0), weapon(nullptr),weapon_type(hero.weapon_type),
                                  texture{nullptr, nullptr, nullptr, nullptr}{

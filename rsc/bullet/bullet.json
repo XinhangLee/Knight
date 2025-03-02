@@ -1,0 +1,38 @@
+{
+  "bullet_1": {
+    "attack_power": 3,
+    "energy_consumed": 2,
+    "time_gap": 200,
+    "center_bullet": {"x": 8, "y": 8},
+    "speed_bullet": 8.0,
+    "frame_num": 6,
+    "path": "../rsc/bullet/Fireball.png"
+  },
+  "bullet_2": {
+    "attack_power": 3,
+    "energy_consumed": 0,
+    "time_gap": 500,
+    "center_bullet": {"x": 18, "y": 9},
+    "speed_bullet": 8.0,
+    "frame_num": 1,
+    "path": "../rsc/bullet/projectile.png"
+  },
+  "bullet_3": {
+    "attack_power": 3,
+    "energy_consumed": 0,
+    "time_gap": 500,
+    "center_bullet": {"x": 8, "y": 8},
+    "speed_bullet": 4.0,
+    "frame_num": 6,
+    "path": "../rsc/bullet/Darkness Bolt.png"
+  },
+  "bullet_4": {
+    "attack_power": 1,
+    "energy_consumed": 4,
+    "time_gap": 500,
+    "center_bullet": {"x": 8, "y": 8},
+    "speed_bullet": 6.0,
+    "frame_num": 6,
+    "path": "../rsc/bullet/Magic Orb.png"
+  }
+}

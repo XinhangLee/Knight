@@ -28,7 +28,7 @@ class Hero final : public Collider, public Timer{
     int frame_num;
     int currentframe;
     Weapon *weapon;
-    const s_weapons *weapon_type;
+    s_weapons weapon_type;
     SDL_Texture *texture[4];
 public:
     explicit Hero(const s_heroes &);
@@ -47,7 +47,7 @@ public:
     void Sub_energy(int x);
     void Hurt(int x) const;
     void UpdateDir(Position p) const;
-    const s_weapons *getWeaponType() const {return weapon_type;}
+    const s_weapons *getWeaponType() const {return &weapon_type;}
     SDL_Point getWeaponPoint() const {return {weapon_point.x - center_hero.x, weapon_point.y - center_hero.y};}
     Position getPos() const {return pos_hero;}
     void attack() const;

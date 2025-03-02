@@ -55,7 +55,7 @@ Monster_type2::Monster_type2(const int HP, const int range, const double speed_m
     frame_num(8), current_frame(-1), staff_point(staff_point), weapon(w, bullets_monster){
     setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
     setColliderSize(48,48);
-    Reset(w.bullet_type->time_gap);
+    Reset(w.bullet_type.time_gap);
     Load_Image(texture, Path);
 }
 Monster_type2::~Monster_type2() {
@@ -234,7 +234,7 @@ void Monster_type3::Die() {
 Monster_type4::Monster_type4(const int HP, const int range, const double speed_monster,
     const Position pos_monster, const SDL_Point center_monster):
     Monster(HP, range, speed_monster, pos_monster, center_monster), HP_total(HP), texture(nullptr),
-    row{-1,-1}, current_frame{-1,-1,-1,-1}, bullet(bullet_4), mode{false, false, false}, times(3){
+    row{-1,-1}, current_frame{-1,-1,-1,-1}, bullet(init_bullets("bullet_4")), mode{false, false, false}, times(3){
     setColliderPosition(static_cast<int>(pos_monster.x) - center_monster.x, static_cast<int>(pos_monster.y) - center_monster.y);
     setColliderSize(222,246);
     Load_Image(texture[0], "../rsc/monster/covid-19-Idle-1.png");

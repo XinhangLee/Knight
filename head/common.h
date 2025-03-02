@@ -7,20 +7,23 @@
 
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 
-#include <iostream>
-#include <cstring>
-#include <cmath>
-#include <vector>
 #include <algorithm>
+#include <cfloat>
+#include <cmath>
 #include <complex>
 #include <cstdlib>
+#include <cstring>
 #include <ctime>
+#include <fstream>
+#include <iostream>
+#include <json.hpp>
+#include <memory>
 #include <random>
-#include <cfloat>
+#include <vector>
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -134,7 +137,7 @@ inline void Load_Music(Mix_Music *&music, const std::string& musicPath) {
     if (Mix_PlayMusic(music, -1) == -1) {
         LOG_ERROR("Music Play");
     }
-    Mix_VolumeMusic(32);
+    Mix_VolumeMusic(8);
 }
 inline void Load_Chunk(Mix_Chunk *&chunk, const std::string& chunkPath) {
     chunk = Mix_LoadWAV(chunkPath.c_str());
@@ -144,7 +147,7 @@ inline void Load_Chunk(Mix_Chunk *&chunk, const std::string& chunkPath) {
     if (Mix_PlayChannel(-1, chunk, 0) == -1) {
         LOG_ERROR("Chunk Play");
     }
-    Mix_VolumeChunk(chunk, 64);
+    Mix_VolumeChunk(chunk, 8);
 }
 inline double Distance(const Position p1, const Position p2) {
     return std::sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));

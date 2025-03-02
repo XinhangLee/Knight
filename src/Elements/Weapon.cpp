@@ -7,7 +7,7 @@
 
 Weapon::Weapon(const s_weapons &w, std::vector<Bullet*>& bullets): dir_weapon{1.0, 0.0},pos_weapon{0.0, 0.0},
     center_weapon(w.center_weapon), launch_point(w.launch_point), texture(nullptr), bullet_type(w.bullet_type), bullets(bullets){
-    Load_Image(this->texture, w.Path);
+    Load_Image(this->texture, w.path);
 }
 Weapon::~Weapon(){
     if (texture != nullptr) {
@@ -34,16 +34,16 @@ void Weapon_type_1::render() const{
 void Weapon_type_1::Attack(const Direction d, const Direction h) const {
     setDir(d);
     if (h.dx > 0){
-        bullets.push_back(new Bullet(*bullet_type,{pos_weapon.x - center_weapon.x + launch_point.x,
+        bullets.push_back(new Bullet(bullet_type,{pos_weapon.x - center_weapon.x + launch_point.x,
                                                                pos_weapon.y - center_weapon.y + launch_point.y},dir_weapon));
     }
     else {
-        bullets.push_back(new Bullet(*bullet_type,{pos_weapon.x - center_weapon.x + 32 - launch_point.x,
+        bullets.push_back(new Bullet(bullet_type,{pos_weapon.x - center_weapon.x + 32 - launch_point.x,
                                                                pos_weapon.y - center_weapon.y - launch_point.y},dir_weapon));
     }
 }
 void Weapon_type_1::Attack() const {
-    bullets.push_back(new Bullet(*bullet_type,{pos_weapon.x - center_weapon.x + launch_point.x,
+    bullets.push_back(new Bullet(bullet_type,{pos_weapon.x - center_weapon.x + launch_point.x,
                                                            pos_weapon.y - center_weapon.y + launch_point.y},dir_weapon));
 }
 

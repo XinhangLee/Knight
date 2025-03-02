@@ -1,0 +1,26 @@
+{
+  "weapon_1": {
+    "center_weapon": {
+      "x": 16,
+      "y": 16
+    },
+    "launch_point": {
+      "x": 27,
+      "y": 4
+    },
+    "bullet_type": "bullet_2",
+    "path": "../rsc/weapon/staff1.png"
+  },
+  "weapon_2": {
+    "center_weapon": {
+      "x": 16,
+      "y": 16
+    },
+    "launch_point": {
+      "x": 27,
+      "y": 4
+    },
+    "bullet_type": "bullet_3",
+    "path": "../rsc/weapon/staff2.png"
+  }
+}

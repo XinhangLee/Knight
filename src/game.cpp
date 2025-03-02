@@ -69,7 +69,7 @@ void Game::game() {
                 }
             }
         }
-        level_control();
+        // level_control();
 
         display();
         SDL_Delay(1000 / FPS);
@@ -92,8 +92,6 @@ void Game::do_keydown(const SDL_Event &event) {
             IsQuit = true;
             break;
         case SDL_SCANCODE_SPACE:
-            CreateHero();
-        break;
         case SDL_SCANCODE_RETURN:
             CreateHero();
         break;
@@ -102,12 +100,12 @@ void Game::do_keydown(const SDL_Event &event) {
         break;
         case SDL_SCANCODE_Z :
             if (hero) {
-                monster.push_back(new Monster_type3(10,500,3.5,{900,600},{41,36},"../rsc/monster/Demon bat.png", bullet_2));
+                monster.push_back(new Monster_type3(10,500,3.5,{900,600},{41,36},"../rsc/monster/Demon bat.png", init_bullets("bullet_2")));
             }
         break;
         case SDL_SCANCODE_X:
             if (hero) {
-                monster.push_back(new Monster_type2(10,500,3.5,{8,12},{700,500},{24,24},"../rsc/monster/ghost.png",weapon_2));
+                monster.push_back(new Monster_type2(10,500,3.5,{8,12},{700,500},{24,24},"../rsc/monster/ghost.png",init_weapons("weapon_2")));
             }
         break;
         case SDL_SCANCODE_C:
@@ -284,9 +282,9 @@ void Game::CreateHero() {
     SDL_Delay(500);
     Mix_FreeChunk(chunk);
     if (!hero)
-        hero = new Hero(hero_1);
+        hero = new Hero(init_heroes("hero_1"));
     if (hero && !hero->getWeapon()) {
-        hero->setWeapon(new Weapon_type_1(weapon_1, bullets_hero));
+        hero->setWeapon(new Weapon_type_1(init_weapons("weapon_1"), bullets_hero));
     }
     if (!level)
         level = new Level1();

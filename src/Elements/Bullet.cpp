@@ -12,7 +12,7 @@ Bullet::Bullet(const s_bullets &bullet, const Position pos_bullet, const Directi
         center_bullet(bullet.center_bullet), dir_bullet(dir_bullet), speed_bullet(bullet.speed_bullet),
         frame_current(0), frame_num(bullet.frame_num),texture(nullptr),is_first(true)
 {
-    Load_Image(this->texture, bullet.Path);
+    Load_Image(this->texture, bullet.path);
 }
 Bullet::~Bullet() {
     if (texture != nullptr) {
