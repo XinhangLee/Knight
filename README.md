@@ -9,7 +9,7 @@
 > 
 >       诸君，于游戏之境，且行且赏，领略其中雅趣，方不负此番妙境。
 
-<iframe src="https://www.bilibili.com/video/BV1QV9gYpEcn/?spm_id_from=333.1007.top_right_bar_window_dynamic.content.click" width="640" height="360" frameborder="0" allowfullscreen></iframe>
+- [游戏介绍](https://www.bilibili.com/video/BV1QV9gYpEcn/?spm_id_from=333.1007.top_right_bar_window_dynamic.content.click)
 
 ---
 
